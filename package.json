@@ -1,0 +1,13 @@
+{
+  "name": "vegwins-server",
+  "version": "0.0.1",
+  "description": "비긴즈 RESTful API 서버입니다.",
+  "main": "/src/app.ts",
+  "scripts": {
+    "compile": "tsc && node ./build/src/app.js",
+    "start": "nodemon -e ts --exec \"npm run compile\""
+  },
+  "keywords": [],
+  "author": "Han-Kimm",
+  "license": "ISC"
+}
