@@ -4,12 +4,19 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
+const morgan_1 = __importDefault(require("morgan"));
+require("./loadEnv");
+require("./db/connect");
+// initialize
 const app = (0, express_1.default)();
 app.set("port", process.env.PORT || 8080);
 // middlewares
+app.use((0, morgan_1.default)("combined"));
+// routes
 app.get("/", (req, res) => {
-    res.send("Hello World!");
+    res.send({ data: "hello world" });
 });
+// listen
 app.listen(app.get("port"), () => {
-    console.log(app.get("port"), "번 포트에서 서버 시작,");
+    console.log(`server connected : http://localhost:${app.get("port")}`);
 });

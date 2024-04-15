@@ -1,17 +1,21 @@
 import express from "express";
 import morgan from "morgan";
+import "./loadEnv";
+import "./db/connect";
 
+// initialize
 const app = express();
-
 app.set("port", process.env.PORT || 8080);
 
 // middlewares
 app.use(morgan("combined"));
 
+// routes
 app.get("/", (req, res) => {
-  res.send("Hello World!");
+  res.send({ data: "hello world" });
 });
 
+// listen
 app.listen(app.get("port"), () => {
-  console.log(app.get("port"), "번 포트에서 서버 시작,");
+  console.log(`server connected : http://localhost:${app.get("port")}`);
 });
