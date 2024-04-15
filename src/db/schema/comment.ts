@@ -1,0 +1,27 @@
+import { ObjectId } from "mongodb";
+import mongoose from "mongoose";
+
+const commentSchema = new mongoose.Schema(
+  {
+    writer: {
+      type: ObjectId,
+      ref: "User",
+      required: [true, "comment.writer: 필수입니다."],
+    },
+    content: {
+      type: String,
+      required: [true, "comment.content: 필수입니다."],
+    },
+    recomment: [
+      {
+        type: ObjectId,
+        ref: "Comment",
+      },
+    ],
+  },
+  {
+    timestamps: true,
+  }
+);
+
+export default mongoose.model("Comment", commentSchema);
