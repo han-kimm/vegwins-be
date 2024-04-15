@@ -2,6 +2,8 @@ import express from "express";
 import morgan from "morgan";
 import "./loadEnv";
 import "./db/connect";
+import paperRouter from "./routes/paper";
+import { errorHandler, notFound } from "./error";
 
 // initialize
 const app = express();
@@ -14,6 +16,12 @@ app.use(morgan("combined"));
 app.get("/", (req, res) => {
   res.send({ data: "hello world" });
 });
+
+app.use("/paper", paperRouter);
+
+// error handling
+app.use(notFound);
+app.use(errorHandler);
 
 // listen
 app.listen(app.get("port"), () => {
