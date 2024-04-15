@@ -3,14 +3,9 @@ import paper from "../db/schema/paper";
 
 const paperRouter = Router();
 
-paperRouter.get("/", async (req, res, next) => {
+paperRouter.post("/", async (req, res, next) => {
   try {
-    const newPaper = await paper.create({
-      title: "테스트1",
-      category: ["서점"],
-      description: "우와",
-      writer: "1",
-    });
+    const newPaper = await paper.create(req.body);
 
     console.log(JSON.stringify(newPaper));
 

@@ -1,25 +1,27 @@
 import { ObjectId } from "mongodb";
 import mongoose from "mongoose";
+import { MAXLENGTH, REQUIRED } from "../../constants/errorMessage";
 
 const paperSchema = new mongoose.Schema(
   {
     title: {
       type: String,
-      maxLength: [20, "paper.title: 20자를 초과했습니다."],
-      required: [true, "paper.title: 필수입니다."],
+      maxLength: [20, MAXLENGTH(20)],
+      required: [true, REQUIRED],
     },
     category: {
       type: [String],
-      required: [true, "paper.category: 필수입니다."],
+      required: [true, REQUIRED],
     },
     description: {
       type: String,
-      required: [true, "paper.description: 필수입니다."],
+      maxLength: [300, MAXLENGTH(300)],
+      required: [true, REQUIRED],
     },
     writer: {
       type: ObjectId,
       ref: "User",
-      required: [true, "paper.writer: 필수입니다."],
+      required: [true, REQUIRED],
     },
     comment: [
       {

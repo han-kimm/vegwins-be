@@ -1,20 +1,21 @@
 import { ObjectId } from "mongodb";
 import mongoose from "mongoose";
+import { MAXLENGTH, PROVIDER, REQUIRED } from "../../constants/errorMessage";
 
 const userSchema = new mongoose.Schema(
   {
     nickname: {
       type: String,
-      maxLength: [10, "user.nickname: 10자를 초과했습니다."],
-      required: [true, "user.nickname: 필수입니다."],
+      maxLength: [10, MAXLENGTH(10)],
+      required: [true, REQUIRED],
     },
     provider: {
       type: String,
       enum: {
         values: ["google"],
-        message: "user.provider: 지원하는 로그인 방식이 아닙니다.",
+        message: PROVIDER,
       },
-      required: [true, "user.provider: 필수입니다."],
+      required: [true, REQUIRED],
     },
     paper: [
       {

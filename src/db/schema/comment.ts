@@ -1,16 +1,17 @@
 import { ObjectId } from "mongodb";
 import mongoose from "mongoose";
+import { REQUIRED } from "../../constants/errorMessage";
 
 const commentSchema = new mongoose.Schema(
   {
     writer: {
       type: ObjectId,
       ref: "User",
-      required: [true, "comment.writer: 필수입니다."],
+      required: [true, REQUIRED],
     },
     content: {
       type: String,
-      required: [true, "comment.content: 필수입니다."],
+      required: [true, REQUIRED],
     },
     recomment: [
       {

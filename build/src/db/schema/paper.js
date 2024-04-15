@@ -19,11 +19,11 @@ const paperSchema = new mongoose_1.default.Schema({
         type: String,
         required: [true, "paper.description: 필수입니다."],
     },
-    writer: {
-        type: mongodb_1.ObjectId,
-        ref: "User",
-        required: [true, "paper.writer: 필수입니다."],
-    },
+    // writer: {
+    //   type: ObjectId,
+    //   ref: "User",
+    //   required: [true, "paper.writer: 필수입니다."],
+    // },
     comment: [
         {
             type: mongodb_1.ObjectId,
