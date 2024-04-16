@@ -4,7 +4,7 @@ import { MAXLENGTH, PROVIDER, REQUIRED } from "../../constants/errorMessage";
 
 const userSchema = new mongoose.Schema(
   {
-    email: {
+    sub: {
       type: String,
       required: [true, REQUIRED],
     },
@@ -19,6 +19,10 @@ const userSchema = new mongoose.Schema(
         values: ["google"],
         message: PROVIDER,
       },
+      required: [true, REQUIRED],
+    },
+    refreshToken: {
+      type: String,
       required: [true, REQUIRED],
     },
     paper: [

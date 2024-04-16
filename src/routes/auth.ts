@@ -3,6 +3,7 @@ import cors from "cors";
 import { OAuth2Client } from "google-auth-library";
 import User from "../db/schema/user";
 import nicknameMaker from "../constants/nickname";
+import { setToken } from "../middlewares/jwt";
 const authRouter = Router();
 
 authRouter.use(
@@ -27,16 +28,19 @@ authRouter.post("/google", async (req, res, next) => {
         res.status(400).send({ msg: "구글 로그인 토큰 에러" });
         return;
       }
-      const currentUser = await User.findOne({ email: payload?.email });
+      const { sub } = payload;
+      const currentUser = await User.findOne({ sub });
       if (!currentUser) {
-        const { email } = payload;
-        const newUser = await User.create({
-          email,
-          nickname: nicknameMaker(),
+        await User.create({
+          sub,
+          nickname: nicknameMaker(sub),
           provider: "google",
         });
-        newUser.save();
       }
+      const accessToken = setToken(sub, "1h");
+      const refreshToken = setToken(sub, "1d");
+      res.status(200).send({ accessToken, refreshToken });
+
       //토큰
     } catch (e) {
       next(e);
