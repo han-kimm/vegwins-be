@@ -5,19 +5,20 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongodb_1 = require("mongodb");
 const mongoose_1 = __importDefault(require("mongoose"));
+const errorMessage_1 = require("../../constants/errorMessage");
 const userSchema = new mongoose_1.default.Schema({
     nickname: {
         type: String,
-        maxLength: [10, "user.nickname: 10자를 초과했습니다."],
-        required: [true, "user.nickname: 필수입니다."],
+        maxLength: [10, (0, errorMessage_1.MAXLENGTH)(10)],
+        required: [true, errorMessage_1.REQUIRED],
     },
     provider: {
         type: String,
         enum: {
             values: ["google"],
-            message: "user.provider: 지원하는 로그인 방식이 아닙니다.",
+            message: errorMessage_1.PROVIDER,
         },
-        required: [true, "user.provider: 필수입니다."],
+        required: [true, errorMessage_1.REQUIRED],
     },
     paper: [
         {

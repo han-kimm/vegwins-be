@@ -4,9 +4,13 @@ import { MAXLENGTH, PROVIDER, REQUIRED } from "../../constants/errorMessage";
 
 const userSchema = new mongoose.Schema(
   {
+    email: {
+      type: String,
+      required: [true, REQUIRED],
+    },
     nickname: {
       type: String,
-      maxLength: [10, MAXLENGTH(10)],
+      maxLength: [15, MAXLENGTH(15)],
       required: [true, REQUIRED],
     },
     provider: {
@@ -38,4 +42,6 @@ const userSchema = new mongoose.Schema(
   }
 );
 
-export default mongoose.model("User", userSchema);
+const User = mongoose.model("User", userSchema);
+
+export default User;

@@ -5,25 +5,27 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongodb_1 = require("mongodb");
 const mongoose_1 = __importDefault(require("mongoose"));
+const errorMessage_1 = require("../../constants/errorMessage");
 const paperSchema = new mongoose_1.default.Schema({
     title: {
         type: String,
-        maxLength: [20, "paper.title: 20자를 초과했습니다."],
-        required: [true, "paper.title: 필수입니다."],
+        maxLength: [20, (0, errorMessage_1.MAXLENGTH)(20)],
+        required: [true, errorMessage_1.REQUIRED],
     },
     category: {
         type: [String],
-        required: [true, "paper.category: 필수입니다."],
+        required: [true, errorMessage_1.REQUIRED],
     },
     description: {
         type: String,
-        required: [true, "paper.description: 필수입니다."],
+        maxLength: [300, (0, errorMessage_1.MAXLENGTH)(300)],
+        required: [true, errorMessage_1.REQUIRED],
     },
-    // writer: {
-    //   type: ObjectId,
-    //   ref: "User",
-    //   required: [true, "paper.writer: 필수입니다."],
-    // },
+    writer: {
+        type: mongodb_1.ObjectId,
+        ref: "User",
+        required: [true, errorMessage_1.REQUIRED],
+    },
     comment: [
         {
             type: mongodb_1.ObjectId,

@@ -1,9 +1,10 @@
-import express from "express";
+import express, { json, urlencoded } from "express";
 import morgan from "morgan";
 import "./loadEnv";
 import "./db/connect";
 import paperRouter from "./routes/paper";
 import { errorHandler, notFound } from "./error";
+import authRouter from "./routes/auth";
 
 // initialize
 const app = express();
@@ -11,6 +12,8 @@ app.set("port", process.env.PORT || 8080);
 
 // middlewares
 app.use(morgan("combined"));
+app.use(json());
+app.use(urlencoded({ extended: true }));
 
 // routes
 app.get("/", (req, res) => {
@@ -18,6 +21,7 @@ app.get("/", (req, res) => {
 });
 
 app.use("/paper", paperRouter);
+app.use("/auth", authRouter);
 
 // error handling
 app.use(notFound);
