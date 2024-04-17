@@ -6,6 +6,7 @@ import paperRouter from "./routes/paper";
 import { errorHandler, notFound } from "./error";
 import authRouter from "./routes/auth";
 import compression from "compression";
+import indexRouter from "./routes";
 
 // initialize
 const app = express();
@@ -18,12 +19,7 @@ app.use(json());
 app.use(urlencoded({ extended: true }));
 
 // routes
-app.get("/", (req, res) => {
-  res.send({ data: "hello world" });
-});
-
-app.use("/paper", paperRouter);
-app.use("/auth", authRouter);
+app.use("/api", indexRouter);
 
 // error handling
 app.use(notFound);

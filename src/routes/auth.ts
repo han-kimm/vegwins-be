@@ -43,7 +43,7 @@ authRouter.post("/google", async (req, res, next) => {
       }
       const accessToken = setToken({ sub }, "1h");
       const refreshToken = setToken({ sub }, "1d");
-      res.cookie("v_at", accessToken, { maxAge: 1000 * 60 * 60, httpOnly: true, sameSite: "lax" });
+      res.cookie("v_at", accessToken, { maxAge: 1000 * 60 * 60, httpOnly: true, sameSite: "lax", path: "/api" });
       res.status(200).json({ refreshToken, nickname });
       return;
       //토큰
