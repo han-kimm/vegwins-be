@@ -7,9 +7,13 @@ const mongodb_1 = require("mongodb");
 const mongoose_1 = __importDefault(require("mongoose"));
 const errorMessage_1 = require("../../constants/errorMessage");
 const userSchema = new mongoose_1.default.Schema({
+    sub: {
+        type: String,
+        required: [true, errorMessage_1.REQUIRED],
+    },
     nickname: {
         type: String,
-        maxLength: [10, (0, errorMessage_1.MAXLENGTH)(10)],
+        maxLength: [15, (0, errorMessage_1.MAXLENGTH)(15)],
         required: [true, errorMessage_1.REQUIRED],
     },
     provider: {
@@ -38,4 +42,5 @@ const userSchema = new mongoose_1.default.Schema({
         updatedAt: false,
     },
 });
-exports.default = mongoose_1.default.model("User", userSchema);
+const User = mongoose_1.default.model("User", userSchema);
+exports.default = User;

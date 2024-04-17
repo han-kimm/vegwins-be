@@ -28,25 +28,30 @@ authRouter.post("/google", async (req, res, next) => {
         res.status(400).send({ msg: "구글 로그인 토큰 에러" });
         return;
       }
+      let nickname;
       const { sub } = payload;
       const currentUser = await User.findOne({ sub });
       if (!currentUser) {
-        await User.create({
+        const newUser = await User.create({
           sub,
           nickname: nicknameMaker(sub),
           provider: "google",
         });
+        nickname = newUser.nickname;
+      } else {
+        nickname = currentUser.nickname;
       }
-      const accessToken = setToken(sub, "1h");
-      const refreshToken = setToken(sub, "1d");
-      res.status(200).send({ accessToken, refreshToken });
-
+      const accessToken = setToken({ sub }, "1h");
+      const refreshToken = setToken({ sub }, "1d");
+      res.cookie("v_at", accessToken, { maxAge: 1000 * 60 * 60, httpOnly: true, sameSite: "lax" });
+      res.status(200).json({ refreshToken, nickname });
+      return;
       //토큰
     } catch (e) {
+      console.error(e);
       next(e);
     }
   }
-
   // const { code } = req.query as { code: string; scope: string };
   // const profile = await fetch("https://oauth2.googleapis.com/token", {
   //   method: "POST",
@@ -59,8 +64,6 @@ authRouter.post("/google", async (req, res, next) => {
   //   }),
   // }).then((resp) => resp.text());
   // console.log(profile);
-
-  res.status(400).send({ text: "hi" });
 });
 
 export default authRouter;

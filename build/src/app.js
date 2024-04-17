@@ -33,11 +33,13 @@ require("./db/connect");
 const paper_1 = __importDefault(require("./routes/paper"));
 const error_1 = require("./error");
 const auth_1 = __importDefault(require("./routes/auth"));
+const compression_1 = __importDefault(require("compression"));
 // initialize
 const app = (0, express_1.default)();
 app.set("port", process.env.PORT || 8080);
 // middlewares
-app.use((0, morgan_1.default)("combined"));
+app.use((0, compression_1.default)());
+app.use((0, morgan_1.default)("short"));
 app.use((0, express_1.json)());
 app.use((0, express_1.urlencoded)({ extended: true }));
 // routes

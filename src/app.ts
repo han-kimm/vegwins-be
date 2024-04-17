@@ -5,13 +5,15 @@ import "./db/connect";
 import paperRouter from "./routes/paper";
 import { errorHandler, notFound } from "./error";
 import authRouter from "./routes/auth";
+import compression from "compression";
 
 // initialize
 const app = express();
 app.set("port", process.env.PORT || 8080);
 
 // middlewares
-app.use(morgan("combined"));
+app.use(compression());
+app.use(morgan("short"));
 app.use(json());
 app.use(urlencoded({ extended: true }));
 

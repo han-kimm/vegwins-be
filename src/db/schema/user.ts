@@ -21,10 +21,6 @@ const userSchema = new mongoose.Schema(
       },
       required: [true, REQUIRED],
     },
-    refreshToken: {
-      type: String,
-      required: [true, REQUIRED],
-    },
     paper: [
       {
         type: ObjectId,
