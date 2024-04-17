@@ -1,11 +1,10 @@
-import { ObjectId } from "mongodb";
 import mongoose from "mongoose";
 import { REQUIRED } from "../../constants/errorMessage";
 
 const commentSchema = new mongoose.Schema(
   {
     writer: {
-      type: ObjectId,
+      type: String,
       ref: "User",
       required: [true, REQUIRED],
     },
@@ -15,7 +14,7 @@ const commentSchema = new mongoose.Schema(
     },
     recomment: [
       {
-        type: ObjectId,
+        type: String,
         ref: "Comment",
       },
     ],

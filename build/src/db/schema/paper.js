@@ -22,7 +22,7 @@ const paperSchema = new mongoose_1.default.Schema({
         required: [true, errorMessage_1.REQUIRED],
     },
     writer: {
-        type: mongodb_1.ObjectId,
+        type: String,
         ref: "User",
         required: [true, errorMessage_1.REQUIRED],
     },
@@ -42,4 +42,5 @@ const paperSchema = new mongoose_1.default.Schema({
 }, {
     timestamps: true,
 });
-exports.default = mongoose_1.default.model("Paper", paperSchema);
+const Paper = mongoose_1.default.model("Paper", paperSchema);
+exports.default = Paper;

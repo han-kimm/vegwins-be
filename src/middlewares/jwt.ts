@@ -4,9 +4,12 @@ import jwt from "jsonwebtoken";
 export const verifyToken: RequestHandler = (req, res, next) => {
   const token = JSON.parse(req.cookies["v_at"]);
   try {
-    res.locals.decoded = jwt.verify(token, process.env.JWT_SECRET ?? "", (err: any, decoded: any) => {
-      console.log(decoded);
-      console.log(new Date(decoded.exp));
+    jwt.verify(token, process.env.JWT_SECRET ?? "", (err: any, decoded: any) => {
+      if (err) {
+        return next(err);
+      }
+
+      res.locals.decoded = decoded;
     });
     return next();
   } catch (e: any) {

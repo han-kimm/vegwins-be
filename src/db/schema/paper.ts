@@ -19,7 +19,7 @@ const paperSchema = new mongoose.Schema(
       required: [true, REQUIRED],
     },
     writer: {
-      type: ObjectId,
+      type: String,
       ref: "User",
       required: [true, REQUIRED],
     },
@@ -42,4 +42,5 @@ const paperSchema = new mongoose.Schema(
   }
 );
 
-export default mongoose.model("Paper", paperSchema);
+const Paper = mongoose.model("Paper", paperSchema);
+export default Paper;
