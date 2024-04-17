@@ -54,6 +54,9 @@ app.use("/api", routes_1.default);
 app.use(error_1.notFound);
 app.use(error_1.errorHandler);
 // listen;
+// app.listen(app.get("port"), () => {
+//   console.log("server connected");
+// });
 https_1.default.createServer(options, app).listen(8000, () => {
     console.log("https connected");
 });

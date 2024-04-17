@@ -32,6 +32,11 @@ app.use(notFound);
 app.use(errorHandler);
 
 // listen;
+
+// app.listen(app.get("port"), () => {
+//   console.log("server connected");
+// });
+
 https.createServer(options, app).listen(8000, () => {
   console.log("https connected");
 });
