@@ -26,7 +26,10 @@ const dbConnect = () => {
     });
     mongoose_1.default.connection.on("disconnected", () => {
         console.error("MongoDB disconnected, try to reconnect...");
-        dbConnect();
+        if (connectCount < 3) {
+            connectCount++;
+            dbConnect();
+        }
     });
 };
 dbConnect();

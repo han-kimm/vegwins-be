@@ -10,3 +10,6 @@
 
 # tsc build
 /build
+
+# https
+/https

@@ -1,16 +1,22 @@
+import compression from "compression";
 import express, { json, urlencoded } from "express";
+import { readFileSync } from "fs";
 import morgan from "morgan";
+import https from "https";
 import "./loadEnv";
 import "./db/connect";
-import paperRouter from "./routes/paper";
 import { errorHandler, notFound } from "./error";
-import authRouter from "./routes/auth";
-import compression from "compression";
 import indexRouter from "./routes";
 
 // initialize
 const app = express();
 app.set("port", process.env.PORT || 8080);
+
+const options = {
+  key: readFileSync("https/server.key"),
+  cert: readFileSync("https/server.crt"),
+  ca: readFileSync("https/server.csr"),
+};
 
 // middlewares
 app.use(compression());
@@ -25,7 +31,7 @@ app.use("/api", indexRouter);
 app.use(notFound);
 app.use(errorHandler);
 
-// listen
-app.listen(app.get("port"), () => {
-  console.log(`server connected : http://localhost:${app.get("port")}`);
+// listen;
+https.createServer(options, app).listen(8000, () => {
+  console.log("https connected");
 });
