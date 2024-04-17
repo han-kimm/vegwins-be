@@ -28,35 +28,35 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const compression_1 = __importDefault(require("compression"));
 const express_1 = __importStar(require("express"));
-const fs_1 = require("fs");
 const morgan_1 = __importDefault(require("morgan"));
-const https_1 = __importDefault(require("https"));
 require("./loadEnv");
 require("./db/connect");
 const error_1 = require("./error");
 const routes_1 = __importDefault(require("./routes"));
+const cookie_parser_1 = __importDefault(require("cookie-parser"));
 // initialize
 const app = (0, express_1.default)();
 app.set("port", process.env.PORT || 8080);
-const options = {
-    key: (0, fs_1.readFileSync)("https/server.key"),
-    cert: (0, fs_1.readFileSync)("https/server.crt"),
-    ca: (0, fs_1.readFileSync)("https/server.csr"),
-};
 // middlewares
 app.use((0, compression_1.default)());
 app.use((0, morgan_1.default)("short"));
 app.use((0, express_1.json)());
 app.use((0, express_1.urlencoded)({ extended: true }));
+app.use((0, cookie_parser_1.default)());
 // routes
-app.use("/api", routes_1.default);
+app.use("/", routes_1.default);
 // error handling
 app.use(error_1.notFound);
 app.use(error_1.errorHandler);
 // listen;
-// app.listen(app.get("port"), () => {
-//   console.log("server connected");
-// });
-https_1.default.createServer(options, app).listen(8000, () => {
-    console.log("https connected");
+app.listen(app.get("port"), () => {
+    console.log("server connected");
 });
+// const options = {
+//   key: readFileSync("https/server.key"),
+//   cert: readFileSync("https/server.crt"),
+//   ca: readFileSync("https/server.csr"),
+// };
+// https.createServer(options, app).listen(8000, () => {
+//   console.log("https connected");
+// });
