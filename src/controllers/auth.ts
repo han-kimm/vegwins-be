@@ -38,6 +38,7 @@ export const googleStrategy: RequestHandler = async (req, res, next) => {
     console.log("ffff");
     let sub = "";
     let nickname;
+    let id;
 
     const { code, credential } = req.body;
     if (code) {
@@ -54,12 +55,14 @@ export const googleStrategy: RequestHandler = async (req, res, next) => {
         nickname: nicknameMaker(sub),
         provider: "google",
       });
+      id = newUser.id;
       nickname = newUser.nickname;
     } else {
+      id = currentUser.id;
       nickname = currentUser.nickname;
     }
-    const accessToken = setToken({ sub }, "1h");
-    const refreshToken = setToken({ sub }, "1d");
+    const accessToken = setToken({ id }, "1h");
+    const refreshToken = setToken({ id }, "1d");
     res.status(200).json({ accessToken, refreshToken, nickname });
     return;
   } catch (e) {

@@ -1,6 +1,7 @@
 import { RequestHandler } from "express";
 import Paper, { IPaper } from "../db/schema/paper";
 import { HydratedDocument } from "mongoose";
+import User from "../db/schema/user";
 
 export const getPaper: RequestHandler = async (req, res, next) => {
   try {
@@ -42,10 +43,37 @@ export const getPaper: RequestHandler = async (req, res, next) => {
   }
 };
 
+export const getOnePaper: RequestHandler = async (req, res, next) => {
+  try {
+    const { paperId } = req.params;
+    const paper = await Paper.findOne({ _id: paperId }).populate("writer", "nickname");
+    if (!paper) {
+      res.status(404).send({ code: 404, error: "해당 문서가 존재하지 않습니다." });
+      return;
+    }
+    paper.view++;
+    paper.save();
+
+    paper.isWriter = false;
+    const token = res.locals.decoded;
+    if (token) {
+      const { id } = token;
+      paper.isWriter = id === paper.writer;
+    }
+
+    console.log(paper);
+
+    res.send(paper);
+  } catch (e) {
+    console.error(e);
+    next(e);
+  }
+};
+
 export const postPaper: RequestHandler = async (req, res, next) => {
   try {
-    const { sub } = res.locals.decoded;
-    const newPaper = await Paper.create({ ...req.body, writer: sub });
+    const { id } = res.locals.decoded;
+    const newPaper = await Paper.create({ ...req.body, writer: id });
     res.status(201).send({ paperId: newPaper.id });
     return;
   } catch (e) {

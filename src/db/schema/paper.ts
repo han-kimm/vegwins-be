@@ -1,12 +1,11 @@
-import { ObjectId } from "mongodb";
-import mongoose from "mongoose";
+import mongoose, { Schema, Types } from "mongoose";
 import { MAXLENGTH, REQUIRED } from "../../constants/errorMessage";
 
 export interface IPaper {
   title: string;
   category: string[];
   description: string;
-  writer: string;
+  writer: Types.ObjectId;
   comment?: string[];
   imageUrl?: string;
   hashtag: string[];
@@ -17,8 +16,10 @@ export interface IPaper {
     length: number;
   };
   end: boolean;
+  view: number;
   createdAt: Date;
   updatedAt: Date;
+  isWriter?: boolean;
 }
 
 const paperSchema = new mongoose.Schema<IPaper>(
@@ -38,16 +39,10 @@ const paperSchema = new mongoose.Schema<IPaper>(
       required: [true, REQUIRED],
     },
     writer: {
-      type: String,
+      type: Schema.Types.ObjectId,
       ref: "User",
       required: [true, REQUIRED],
     },
-    comment: [
-      {
-        type: ObjectId,
-        ref: "Comment",
-      },
-    ],
     imageUrl: String,
     hashtag: [String],
     rating: {
@@ -59,6 +54,10 @@ const paperSchema = new mongoose.Schema<IPaper>(
     end: {
       type: Boolean,
       default: false,
+    },
+    view: {
+      type: Number,
+      default: 0,
     },
   },
   {

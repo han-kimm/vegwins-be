@@ -12,11 +12,11 @@ export const updateToken: RequestHandler = async (req, res, next) => {
     jwt.verify(refreshToken, SECRET, verifyCallback(res, 420));
 
     const {
-      decoded: { sub },
+      decoded: { id },
     } = res.locals;
-    const user = await User.findOne({ sub });
+    const user = await User.findOne({ id });
     if (user) {
-      const accessToken = setToken({ sub }, "1h");
+      const accessToken = setToken({ id }, "1h");
       res.status(200).send({ accessToken });
       return;
     }
