@@ -6,6 +6,17 @@ const SECRET = process.env.JWT_SECRET || "";
 
 type Params = Parameters<RequestHandler>;
 
+export const isToken: RequestHandler = async (req, res, next) => {
+  const cookie = req.cookies["v_at"];
+  if (!cookie) {
+    return next();
+  }
+  jwt.verify(cookie, SECRET, (_: any, decoded: any) => {
+    res.locals.decoded = decoded;
+  });
+  next();
+};
+
 export const updateToken: RequestHandler = async (req, res, next) => {
   try {
     const { refreshToken } = req.body;
@@ -29,11 +40,11 @@ export const updateToken: RequestHandler = async (req, res, next) => {
 
 export const verifyToken: RequestHandler = (req, res, next) => {
   try {
-    const cookie = req.cookies["v_at"];
-    if (!cookie) {
+    const token = req.cookies["v_at"];
+    if (!token) {
       return res.status(401).send({ code: 401, error: "유효하지 않은 토큰입니다." });
     }
-    const token = JSON.parse(cookie);
+
     jwt.verify(token, SECRET, verifyCallback(res, 419));
     next();
   } catch (e) {

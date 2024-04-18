@@ -16,7 +16,7 @@ app.use(compression());
 app.use(morgan("short"));
 app.use(json());
 app.use(urlencoded({ extended: true }));
-app.use(cookieParser());
+app.use(cookieParser("vegwins"));
 
 // routes
 app.use("/", indexRouter);

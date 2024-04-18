@@ -35,7 +35,6 @@ const googleCredential = async (credential: string) => {
 
 export const googleStrategy: RequestHandler = async (req, res, next) => {
   try {
-    console.log("ffff");
     let sub = "";
     let nickname;
     let id;

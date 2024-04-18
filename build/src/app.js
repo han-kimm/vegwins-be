@@ -42,7 +42,7 @@ app.use((0, compression_1.default)());
 app.use((0, morgan_1.default)("short"));
 app.use((0, express_1.json)());
 app.use((0, express_1.urlencoded)({ extended: true }));
-app.use((0, cookie_parser_1.default)());
+app.use((0, cookie_parser_1.default)("vegwins"));
 // routes
 app.use("/", routes_1.default);
 // error handling

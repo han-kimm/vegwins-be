@@ -54,16 +54,15 @@ export const getOnePaper: RequestHandler = async (req, res, next) => {
     paper.view++;
     paper.save();
 
-    paper.isWriter = false;
+    const data = paper.toObject({ virtuals: true });
+
     const token = res.locals.decoded;
     if (token) {
       const { id } = token;
-      paper.isWriter = id === paper.writer;
+      data.isWriter = id === paper.writer.id;
     }
 
-    console.log(paper);
-
-    res.send(paper);
+    res.send(data);
   } catch (e) {
     console.error(e);
     next(e);
