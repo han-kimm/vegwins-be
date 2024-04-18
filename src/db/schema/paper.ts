@@ -19,7 +19,7 @@ export interface IPaper {
   view: number;
   createdAt: Date;
   updatedAt: Date;
-  isWriter?: boolean;
+  isWriter: boolean;
 }
 
 const paperSchema = new mongoose.Schema<IPaper>(

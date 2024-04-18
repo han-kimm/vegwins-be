@@ -52,6 +52,15 @@ app.use(error_1.errorHandler);
 app.listen(app.get("port"), () => {
     console.log("server connected");
 });
+let count = 0;
+app.on("diconnected", () => {
+    if (count < 3) {
+        count++;
+        app.listen(app.get("port"), () => {
+            console.log("server connected");
+        });
+    }
+});
 // const options = {
 //   key: readFileSync("https/server.key"),
 //   cert: readFileSync("https/server.crt"),

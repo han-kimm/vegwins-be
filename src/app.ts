@@ -26,9 +26,18 @@ app.use(notFound);
 app.use(errorHandler);
 
 // listen;
-
 app.listen(app.get("port"), () => {
   console.log("server connected");
+});
+
+let count = 0;
+app.on("diconnected", () => {
+  if (count < 3) {
+    count++;
+    app.listen(app.get("port"), () => {
+      console.log("server connected");
+    });
+  }
 });
 
 // const options = {

@@ -55,6 +55,7 @@ export const getOnePaper: RequestHandler = async (req, res, next) => {
     paper.save();
 
     const data = paper.toObject({ virtuals: true });
+    data.isWriter = false;
 
     const token = res.locals.decoded;
     if (token) {
