@@ -12,7 +12,7 @@ indexRouter.use(
   })
 );
 
-indexRouter.use("/paper", paperRouter);
 indexRouter.use("/auth", authRouter);
+indexRouter.use("/paper", paperRouter);
 
 export default indexRouter;

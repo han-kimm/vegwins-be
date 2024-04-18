@@ -1,15 +1,12 @@
 import { Router } from "express";
-import { verifyToken } from "../middlewares/jwt";
 import Paper from "../db/schema/paper";
-import User from "../db/schema/user";
+import { verifyToken } from "../middlewares/jwt";
 
 const paperRouter = Router();
 
-paperRouter.use(verifyToken);
-
 paperRouter.get("/", async (req, res, next) => {
   try {
-    const papers = await Paper.find({});
+    const papers = await Paper.find({}).sort({ createdAt: -1 });
 
     res.send({ data: papers });
     return;
@@ -19,12 +16,10 @@ paperRouter.get("/", async (req, res, next) => {
   }
 });
 
-paperRouter.post("/", async (req, res, next) => {
+paperRouter.post("/", verifyToken, async (req, res, next) => {
   try {
-    console.log(req.body);
     const { sub } = res.locals.decoded;
     const newPaper = await Paper.create({ ...req.body, writer: sub });
-    console.log(JSON.stringify(newPaper));
     res.status(201).send({ paperId: newPaper.id });
     return;
   } catch (e) {

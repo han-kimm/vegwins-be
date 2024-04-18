@@ -35,6 +35,7 @@ const googleCredential = async (credential: string) => {
 
 export const googleStrategy: RequestHandler = async (req, res, next) => {
   try {
+    console.log("ffff");
     let sub = "";
     let nickname;
 
@@ -65,5 +66,5 @@ export const googleStrategy: RequestHandler = async (req, res, next) => {
     console.error(e);
     next(e);
   }
-  res.status(400).send({ error: "잘못된 로그인입니다." });
+  res.status(400).send({ code: 400, error: "잘못된 로그인입니다." });
 };
