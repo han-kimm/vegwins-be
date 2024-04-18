@@ -35,6 +35,7 @@ export const verifyToken: RequestHandler = (req, res, next) => {
     }
     const token = JSON.parse(cookie);
     jwt.verify(token, SECRET, verifyCallback(res, 419));
+    next();
   } catch (e) {
     console.error(e);
     next(e);

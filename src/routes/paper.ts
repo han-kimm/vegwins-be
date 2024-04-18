@@ -1,12 +1,31 @@
 import { Router } from "express";
-import Paper from "../db/schema/paper";
+import Paper, { IPaper } from "../db/schema/paper";
 import { verifyToken } from "../middlewares/jwt";
+import { HydratedDocument } from "mongoose";
 
 const paperRouter = Router();
 
 paperRouter.get("/", async (req, res, next) => {
   try {
-    const papers = await Paper.find({}).sort({ createdAt: -1 });
+    const { c, k } = req.query;
+
+    let papers: HydratedDocument<IPaper>[];
+    if (c && k) {
+      papers = await Paper.find({ category: c, title: k as string }).sort({ createdAt: -1 });
+    } else if (c) {
+      papers = await Paper.find({ category: c }).sort({ createdAt: -1 });
+    } else if (k) {
+      console.log(k);
+      papers = await Paper.aggregate().search({
+        index: "paper_title_search",
+        text: {
+          query: k,
+          path: "title",
+        },
+      });
+    } else {
+      papers = await Paper.find({}).select("title end imageUrl hashtag").sort({ createdAt: -1 });
+    }
 
     res.send({ data: papers });
     return;

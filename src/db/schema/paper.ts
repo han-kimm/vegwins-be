@@ -2,7 +2,26 @@ import { ObjectId } from "mongodb";
 import mongoose from "mongoose";
 import { MAXLENGTH, REQUIRED } from "../../constants/errorMessage";
 
-const paperSchema = new mongoose.Schema(
+export interface IPaper {
+  title: string;
+  category: string[];
+  description: string;
+  writer: string;
+  comment?: string[];
+  imageUrl?: string;
+  hashtag: string[];
+  rating?: {
+    [0]: number;
+    [1]: number;
+    [2]: number;
+    length: number;
+  };
+  end: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+const paperSchema = new mongoose.Schema<IPaper>(
   {
     title: {
       type: String,
@@ -35,12 +54,25 @@ const paperSchema = new mongoose.Schema(
       [0]: Number,
       [1]: Number,
       [2]: Number,
+      length: Number,
+    },
+    end: {
+      type: Boolean,
+      default: false,
     },
   },
   {
     timestamps: true,
+    toJSON: { virtuals: true },
   }
 );
 
-const Paper = mongoose.model("Paper", paperSchema);
+paperSchema.virtual("rated").get(function () {
+  if (this.rating) {
+    return (this.rating?.[1] ?? 0 * 0.5 + (this.rating?.[2] ?? 0)) / (this.rating?.length ?? 1);
+  }
+  return 0;
+});
+
+const Paper = mongoose.model<IPaper>("Paper", paperSchema);
 export default Paper;

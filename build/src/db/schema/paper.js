@@ -38,9 +38,22 @@ const paperSchema = new mongoose_1.default.Schema({
         [0]: Number,
         [1]: Number,
         [2]: Number,
+        length: Number,
+    },
+    end: {
+        type: Boolean,
+        default: false,
     },
 }, {
     timestamps: true,
+    toJSON: { virtuals: true },
+});
+paperSchema.virtual("rated").get(function () {
+    var _a, _b, _c, _d, _e, _f;
+    if (this.rating) {
+        return ((_b = (_a = this.rating) === null || _a === void 0 ? void 0 : _a[1]) !== null && _b !== void 0 ? _b : 0 * 0.5 + ((_d = (_c = this.rating) === null || _c === void 0 ? void 0 : _c[2]) !== null && _d !== void 0 ? _d : 0)) / ((_f = (_e = this.rating) === null || _e === void 0 ? void 0 : _e.length) !== null && _f !== void 0 ? _f : 1);
+    }
+    return 0;
 });
 const Paper = mongoose_1.default.model("Paper", paperSchema);
 exports.default = Paper;
