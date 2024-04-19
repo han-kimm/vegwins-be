@@ -6,9 +6,11 @@ import { hasRating, updateRating } from "../controllers/rating";
 const paperRouter = Router();
 
 paperRouter.get("/", getPaper);
-paperRouter.get("/:paperId", getOnePaper);
-paperRouter.get("/:paperId/user", verifyToken, canEdit, hasRating);
 paperRouter.post("/", verifyToken, postPaper);
+
+paperRouter.get("/:paperId", getOnePaper);
+
+paperRouter.get("/:paperId/user", verifyToken, canEdit, hasRating);
 paperRouter.post("/:paperId/user", verifyToken, updateRating);
 
 export default paperRouter;

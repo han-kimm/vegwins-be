@@ -45,7 +45,7 @@ export const verifyToken: RequestHandler = (req, res, next) => {
   try {
     const token = req.cookies["v_at"];
     if (!token) {
-      return res.status(401).send({ code: 401, error: "유효하지 않은 토큰입니다." });
+      return res.status(401).send({ code: 401, error: "토큰이 존재하지 않습니다." });
     }
 
     jwt.verify(token, SECRET, verifyCallback(res, 419));
