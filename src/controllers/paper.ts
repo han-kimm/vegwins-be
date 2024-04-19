@@ -36,7 +36,7 @@ export const getPaper: RequestHandler = async (req, res, next) => {
     } else {
       papers = await Paper.find({}).select("title end imageUrl hashtag").sort({ rated: -1 });
     }
-    res.send({ data: papers });
+    res.send(papers);
     return;
   } catch (e) {
     console.error(e);
