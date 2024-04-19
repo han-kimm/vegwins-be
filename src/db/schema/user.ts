@@ -1,8 +1,21 @@
 import { ObjectId } from "mongodb";
-import mongoose from "mongoose";
+import mongoose, { Schema, Types } from "mongoose";
 import { MAXLENGTH, PROVIDER, REQUIRED } from "../../constants/errorMessage";
+import { IPaper } from "./paper";
 
-const userSchema = new mongoose.Schema(
+type StringKey = "sub" | "nickname";
+type StringMember = {
+  [key in StringKey]: String;
+};
+
+interface IUser extends StringMember {
+  provider: "google";
+  paper: Types.DocumentArray<IPaper>;
+  comment: Types.DocumentArray<any>;
+  rating: Types.DocumentArray<{ _id: Types.ObjectId; rating: number }>;
+}
+
+const userSchema = new mongoose.Schema<IUser>(
   {
     sub: {
       type: String,
@@ -23,19 +36,19 @@ const userSchema = new mongoose.Schema(
     },
     paper: [
       {
-        type: ObjectId,
+        type: Schema.Types.ObjectId,
         ref: "Paper",
       },
     ],
     comment: [
       {
-        type: ObjectId,
+        type: Schema.Types.ObjectId,
         ref: "Comment",
       },
     ],
     rating: [
       {
-        _id: ObjectId,
+        _id: Schema.Types.ObjectId,
         rating: Number,
       },
     ],

@@ -14,8 +14,8 @@ export const hasRating: RequestHandler = async (req, res, next) => {
       return;
     }
     if ("id" in ratings) {
-      const rating = ratings?.id(paperId)?.rating;
-      data.rating = rating;
+      const paperRating = ratings.id(paperId);
+      data.rating = paperRating?.rating ?? -1;
       res.send(data);
       return;
     }
@@ -27,5 +27,17 @@ export const hasRating: RequestHandler = async (req, res, next) => {
 };
 
 export const updateRating: RequestHandler = async (req, res, next) => {
-  next();
+  try {
+    const { paperId } = req.params;
+    const { rating } = req.body;
+    const { id: _id } = res.locals.accessToken;
+    const user = await User.findOne({ _id });
+    user?.rating.push({ _id: paperId, rating });
+    user?.save();
+
+    res.send({ rating });
+  } catch (e) {
+    console.error(e);
+    next(e);
+  }
 };
