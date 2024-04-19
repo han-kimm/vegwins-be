@@ -1,11 +1,12 @@
 import { RequestHandler } from "express";
-import Paper, { IPaper } from "../db/schema/paper";
 import { HydratedDocument } from "mongoose";
-import User from "../db/schema/user";
+import Paper, { IPaper } from "../db/schema/paper";
 
 export const getPaper: RequestHandler = async (req, res, next) => {
   try {
     const { c, k } = req.query;
+    const REG = /#[a-z0-9_가-힣]+/;
+    const path = REG.test(k as string) ? "hashtag" : "title";
 
     let papers: HydratedDocument<IPaper>[];
     if (c && k) {
@@ -14,7 +15,7 @@ export const getPaper: RequestHandler = async (req, res, next) => {
           index: "paper_title_search",
           text: {
             query: k,
-            path: "title",
+            path,
           },
         })
         .match({ category: c })
@@ -28,7 +29,7 @@ export const getPaper: RequestHandler = async (req, res, next) => {
           index: "paper_title_search",
           text: {
             query: k,
-            path: "title",
+            path,
           },
         })
         .project({ title: 1, end: 1, imageUrl: 1, hashtag: 1 });
