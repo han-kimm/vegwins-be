@@ -33,6 +33,12 @@ const userSchema = new mongoose.Schema(
         ref: "Comment",
       },
     ],
+    rating: [
+      {
+        _id: ObjectId,
+        rating: Number,
+      },
+    ],
   },
   {
     timestamps: {

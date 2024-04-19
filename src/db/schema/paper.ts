@@ -2,6 +2,7 @@ import mongoose, { Schema, Types } from "mongoose";
 import { MAXLENGTH, REQUIRED } from "../../constants/errorMessage";
 
 export interface IPaper {
+  _id: Types.ObjectId;
   title: string;
   category: string[];
   description: string;
@@ -19,7 +20,6 @@ export interface IPaper {
   view: number;
   createdAt: Date;
   updatedAt: Date;
-  isWriter: boolean;
 }
 
 const paperSchema = new mongoose.Schema<IPaper>(

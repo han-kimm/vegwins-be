@@ -1,6 +1,7 @@
 import { RequestHandler } from "express";
-import { HydratedDocument } from "mongoose";
+import { HydratedDocument, Types } from "mongoose";
 import Paper, { IPaper } from "../db/schema/paper";
+import User from "../db/schema/user";
 
 export const getPaper: RequestHandler = async (req, res, next) => {
   try {
@@ -44,6 +45,42 @@ export const getPaper: RequestHandler = async (req, res, next) => {
   }
 };
 
+export const hasRating: RequestHandler = async (req, res, next) => {
+  try {
+    const { paperId } = req.params;
+    const { id: _id } = res.locals.accessToken;
+
+    const user = await User.findOne({ _id });
+    const ratings = user?.rating as Types.DocumentArray<{ id: string; rating: number }>;
+    const rating = ratings.id(paperId)?.rating;
+
+    const data = { isWriter: res.locals.isWriter, rating: -1 };
+    if (!rating) {
+      res.send(data);
+      return;
+    }
+
+    data.rating = rating;
+    res.send(data);
+  } catch (e) {
+    console.error(e);
+    next(e);
+  }
+};
+
+export const canEdit: RequestHandler = async (req, res, next) => {
+  try {
+    const { id: userId } = res.locals.accessToken;
+    const { paperId: _id } = req.params;
+    const paper = await Paper.findOne({ _id });
+    res.locals.isWriter = userId === paper?.writer.id;
+    next();
+  } catch (e) {
+    console.error(e);
+    next(e);
+  }
+};
+
 export const getOnePaper: RequestHandler = async (req, res, next) => {
   try {
     const { paperId } = req.params;
@@ -55,16 +92,7 @@ export const getOnePaper: RequestHandler = async (req, res, next) => {
     paper.view++;
     paper.save();
 
-    const data = paper.toObject({ virtuals: true });
-    data.isWriter = false;
-
-    const token = res.locals.decoded;
-    if (token) {
-      const { id } = token;
-      data.isWriter = id === paper.writer.id;
-    }
-
-    res.send(data);
+    res.send(paper);
   } catch (e) {
     console.error(e);
     next(e);
@@ -73,7 +101,7 @@ export const getOnePaper: RequestHandler = async (req, res, next) => {
 
 export const postPaper: RequestHandler = async (req, res, next) => {
   try {
-    const { id } = res.locals.decoded;
+    const { id } = res.locals.accessToken;
     const newPaper = await Paper.create({ ...req.body, writer: id });
     res.status(201).send({ paperId: newPaper.id });
     return;

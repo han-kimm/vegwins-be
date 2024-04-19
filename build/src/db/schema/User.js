@@ -36,6 +36,12 @@ const userSchema = new mongoose_1.default.Schema({
             ref: "Comment",
         },
     ],
+    rating: [
+        {
+            _id: mongodb_1.ObjectId,
+            rating: Number,
+        },
+    ],
 }, {
     timestamps: {
         createdAt: true,

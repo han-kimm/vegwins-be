@@ -11,8 +11,11 @@ export const isToken: RequestHandler = async (req, res, next) => {
   if (!cookie) {
     return next();
   }
-  jwt.verify(cookie, SECRET, (_: any, decoded: any) => {
-    res.locals.decoded = decoded;
+  jwt.verify(cookie, SECRET, (e: any, decoded: any) => {
+    if (e.name === "TokenExpiredError") {
+    }
+
+    res.locals.accessToken = decoded;
   });
   next();
 };
@@ -23,7 +26,7 @@ export const updateToken: RequestHandler = async (req, res, next) => {
     jwt.verify(refreshToken, SECRET, verifyCallback(res, 420));
 
     const {
-      decoded: { id },
+      accessToken: { id },
     } = res.locals;
     const user = await User.findOne({ id });
     if (user) {
@@ -60,7 +63,7 @@ export const setToken = (id: object, time?: string) => {
 
 const verifyCallback = (res: Params[1], code: number) => (e: any, decoded: any) => {
   if (decoded) {
-    res.locals.decoded = decoded;
+    res.locals.accessToken = decoded;
     return;
   }
 
