@@ -79,7 +79,7 @@ export const canEdit: RequestHandler = async (req, res, next) => {
     const { id: userId } = res.locals.accessToken;
     const { paperId: _id } = req.params;
     const paper = await Paper.findOne({ _id });
-    res.locals.isWriter = userId === paper?.writer.id;
+    res.locals.isWriter = userId === paper?.writer._id.toString();
     next();
   } catch (e) {
     console.error(e);
