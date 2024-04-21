@@ -12,6 +12,10 @@ indexRouter.use(
   })
 );
 
+indexRouter.get("/", (req, res, next) => {
+  return res.send({ code: 200, message: "어서오세요, vwsapi 서버입니다." });
+});
+
 indexRouter.use("/auth", authRouter);
 indexRouter.use("/paper", paperRouter);
 
