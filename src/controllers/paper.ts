@@ -4,35 +4,16 @@ import Paper, { IPaper } from "../db/schema/paper";
 
 export const getPaper: RequestHandler = async (req, res, next) => {
   try {
-    const { c, k } = req.query;
-    const REG = /#[a-z0-9_가-힣]+/;
-    const path = REG.test(k as string) ? "hashtag" : "title";
+    const c = req.query.c;
+    const k = req.query.k as string;
 
     let papers: HydratedDocument<IPaper>[];
     if (c && k) {
-      papers = await Paper.aggregate()
-        .search({
-          index: "paper_title_search",
-          text: {
-            query: k,
-            path,
-          },
-        })
-        .match({ category: c })
-        .project({ title: 1, end: 1, imageUrl: 1, hashtag: 1 });
-      // papers.map((paper) => Paper.hydrate(paper));
+      papers = await Paper.find({ ...makeKeywordQuery(k), category: c }).select("title end imageUrl hashtag");
     } else if (c) {
       papers = await Paper.find({ category: c }).select("title end imageUrl hashtag").sort({ createdAt: -1 });
     } else if (k) {
-      papers = await Paper.aggregate()
-        .search({
-          index: "paper_title_search",
-          text: {
-            query: k,
-            path,
-          },
-        })
-        .project({ title: 1, end: 1, imageUrl: 1, hashtag: 1 });
+      papers = await Paper.find({ ...makeKeywordQuery(k) }).select("title end imageUrl hashtag");
     } else {
       papers = await Paper.find({}).select("title end imageUrl hashtag").sort({ rated: -1 });
     }
@@ -85,4 +66,9 @@ export const canEdit: RequestHandler = async (req, res, next) => {
     console.error(e);
     next(e);
   }
+};
+
+const makeKeywordQuery = (k: string) => {
+  const REG = /#[a-z0-9_가-힣]+/;
+  return REG.test(k) ? { hashtag: k } : { $text: { $search: k } };
 };
