@@ -11,9 +11,9 @@ export interface IPaper {
   imageUrl?: string;
   hashtag: string[];
   rating?: {
-    [0]: number;
-    [1]: number;
-    [2]: number;
+    [0]?: number;
+    [1]?: number;
+    [2]?: number;
     length: number;
   };
   end: boolean;
@@ -46,9 +46,9 @@ const paperSchema = new mongoose.Schema<IPaper>(
     imageUrl: String,
     hashtag: [String],
     rating: {
-      [0]: Number,
-      [1]: Number,
-      [2]: Number,
+      "0": Number,
+      "1": Number,
+      "2": Number,
       length: Number,
     },
     end: {

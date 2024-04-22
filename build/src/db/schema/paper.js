@@ -48,9 +48,9 @@ const paperSchema = new mongoose_1.default.Schema({
     imageUrl: String,
     hashtag: [String],
     rating: {
-        [0]: Number,
-        [1]: Number,
-        [2]: Number,
+        "0": Number,
+        "1": Number,
+        "2": Number,
         length: Number,
     },
     end: {

@@ -28,21 +28,79 @@ export const getRating: RequestHandler = async (req, res, next) => {
 export const updateRating: RequestHandler = async (req, res, next) => {
   try {
     const { paperId } = req.params;
-    const { rating } = req.body;
+    const rating = req.body.rating as 0 | 1 | 2;
 
-    await Paper.updateOne({ _id: paperId }, { [rating[rating]]: rating[rating] + 1 });
+    const paper = await Paper.findOne({ _id: paperId });
+    if (!paper) {
+      res.status(400).send({ code: 400, error: "해당 문서가 존재하지 않습니다." });
+      return;
+    }
+    console.log(typeof rating);
+
+    const previousRating = paper.rating;
+    console.log(previousRating);
+    if (!previousRating) {
+      paper.rating = { [rating]: 1, length: 1 };
+    } else {
+      paper.rating = { ...previousRating, [rating]: (previousRating[rating] ?? 0) + 1, length: (previousRating.length ?? 0) + 1 };
+    }
+    paper.save();
 
     const { id: _id } = res.locals.accessToken;
     const user = await User.findOne({ _id });
-    const userRating = user?.rating;
-    const previoustRating = userRating?.id(paperId);
-    if (previoustRating) {
-      userRating?.pull(paperId);
+    if (!user) {
+      res.status(400).send({ code: 400, error: "해당 유저가 존재하지 않습니다." });
+      return;
     }
-    userRating?.push({ _id: paperId, rating });
-    user?.save();
+
+    const userRating = user.rating;
+    const previoustRating = userRating.id(paperId);
+    if (previoustRating) {
+      userRating.pull(paperId);
+    }
+    userRating.push({ _id: paperId, rating });
+    user.save();
 
     res.send({ rating });
+  } catch (e) {
+    console.error(e);
+    next(e);
+  }
+};
+
+export const deleteRating: RequestHandler = async (req, res, next) => {
+  try {
+    const { paperId } = req.params;
+    const rating = req.body.rating as 0 | 1 | 2;
+
+    const paper = await Paper.findOne({ _id: paperId });
+    if (!paper) {
+      res.status(400).send({ code: 400, error: "해당 문서가 존재하지 않습니다." });
+      return;
+    }
+
+    const previousRating = paper.rating;
+    console.log(previousRating);
+    console.log(rating);
+    if (previousRating) {
+      paper.rating = { ...previousRating, [rating]: previousRating[rating]! - 1, length: previousRating.length! - 1 };
+    }
+    paper.save();
+
+    const { id: _id } = res.locals.accessToken;
+    const user = await User.findOne({ _id });
+    if (!user) {
+      res.status(400).send({ code: 400, error: "해당 유저가 존재하지 않습니다." });
+      return;
+    }
+    const userRating = user.rating;
+    const previoustRating = userRating.id(paperId);
+    if (previoustRating) {
+      userRating.pull(paperId);
+    }
+    user.save();
+
+    res.send({ rating: -1 });
   } catch (e) {
     console.error(e);
     next(e);
