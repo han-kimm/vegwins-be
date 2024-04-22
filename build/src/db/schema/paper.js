@@ -68,7 +68,7 @@ const paperSchema = new mongoose_1.default.Schema({
 paperSchema.virtual("rated").get(function () {
     var _a, _b, _c;
     if (this.rating) {
-        return (((_a = this.rating[1]) !== null && _a !== void 0 ? _a : 0) * 50 + ((_b = this.rating[2]) !== null && _b !== void 0 ? _b : 0) * 100) / ((_c = this.rating.length) !== null && _c !== void 0 ? _c : 1);
+        return Math.floor((((_a = this.rating[1]) !== null && _a !== void 0 ? _a : 0) * 50 + ((_b = this.rating[2]) !== null && _b !== void 0 ? _b : 0) * 100) / ((_c = this.rating.length) !== null && _c !== void 0 ? _c : 1));
     }
     return 0;
 });
