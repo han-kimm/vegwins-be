@@ -15,7 +15,6 @@ export const getRating: RequestHandler = async (req, res, next) => {
       return;
     }
     const paperRating = ratings.id(paperId);
-    console.log("paperRating", paperRating);
     data.rating = paperRating?.rating ?? -1;
     res.send(data);
     return;
@@ -35,10 +34,8 @@ export const updateRating: RequestHandler = async (req, res, next) => {
       res.status(400).send({ code: 400, error: "해당 문서가 존재하지 않습니다." });
       return;
     }
-    console.log(typeof rating);
 
     const previousRating = paper.rating;
-    console.log(previousRating);
     if (!previousRating) {
       paper.rating = { [rating]: 1, length: 1 };
     } else {
@@ -80,8 +77,6 @@ export const deleteRating: RequestHandler = async (req, res, next) => {
     }
 
     const previousRating = paper.rating;
-    console.log(previousRating);
-    console.log(rating);
     if (previousRating) {
       paper.rating = { ...previousRating, [rating]: previousRating[rating]! - 1, length: previousRating.length! - 1 };
     }

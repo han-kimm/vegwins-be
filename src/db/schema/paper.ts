@@ -68,7 +68,7 @@ const paperSchema = new mongoose.Schema<IPaper>(
 
 paperSchema.virtual("rated").get(function () {
   if (this.rating) {
-    return (this.rating?.[1] ?? 0 * 0.5 + (this.rating?.[2] ?? 0)) / (this.rating?.length ?? 1);
+    return ((this.rating[1] ?? 0) * 50 + (this.rating[2] ?? 0) * 100) / (this.rating.length ?? 1);
   }
   return 0;
 });

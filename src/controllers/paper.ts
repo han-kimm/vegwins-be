@@ -9,13 +9,13 @@ export const getPaper: RequestHandler = async (req, res, next) => {
 
     let papers: HydratedDocument<IPaper>[];
     if (c && k) {
-      papers = await Paper.find({ ...makeKeywordQuery(k), category: c }).select("title end imageUrl hashtag");
+      papers = await Paper.find({ ...makeKeywordQuery(k), category: c }).select("title end imageUrl hashtag rating view");
     } else if (c) {
-      papers = await Paper.find({ category: c }).select("title end imageUrl hashtag").sort({ createdAt: -1 });
+      papers = await Paper.find({ category: c }).select("title end imageUrl hashtag rating view").sort({ createdAt: -1 });
     } else if (k) {
-      papers = await Paper.find({ ...makeKeywordQuery(k) }).select("title end imageUrl hashtag");
+      papers = await Paper.find({ ...makeKeywordQuery(k) }).select("title end imageUrl hashtag rating view");
     } else {
-      papers = await Paper.find({}).select("title end imageUrl hashtag").sort({ rated: -1 });
+      papers = await Paper.find({}).select("title end imageUrl hashtag rating view").sort({ rated: -1 });
     }
     res.send(papers);
     return;
