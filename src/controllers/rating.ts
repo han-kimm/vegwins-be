@@ -2,7 +2,7 @@ import { RequestHandler } from "express";
 import User from "../db/schema/user";
 import Paper from "../db/schema/paper";
 
-export const hasRating: RequestHandler = async (req, res, next) => {
+export const getRating: RequestHandler = async (req, res, next) => {
   try {
     const { paperId } = req.params;
     const { id: _id } = res.locals.accessToken;

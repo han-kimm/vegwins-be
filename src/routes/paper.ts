@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { canEdit, getOnePaper, getPaper, postPaper } from "../controllers/paper";
 import { verifyToken } from "../middlewares/jwt";
-import { hasRating, updateRating } from "../controllers/rating";
+import { getRating, updateRating } from "../controllers/rating";
 
 const paperRouter = Router();
 
@@ -10,7 +10,9 @@ paperRouter.post("/", verifyToken, postPaper);
 
 paperRouter.get("/:paperId", getOnePaper);
 
-paperRouter.get("/:paperId/user", verifyToken, canEdit, hasRating);
-paperRouter.post("/:paperId/user", verifyToken, updateRating);
+paperRouter.get("/:paperId/writer", verifyToken, canEdit);
+
+paperRouter.get("/:paperId/rating", verifyToken, getRating);
+paperRouter.post("/:paperId/rating", verifyToken, updateRating);
 
 export default paperRouter;

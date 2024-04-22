@@ -6,31 +6,27 @@ const SECRET = process.env.JWT_SECRET || "";
 
 type Params = Parameters<RequestHandler>;
 
-export const isToken: RequestHandler = async (req, res, next) => {
-  const cookie = req.cookies["v_at"];
-  if (!cookie) {
-    return next();
-  }
-  jwt.verify(cookie, SECRET, (e: any, decoded: any) => {
-    if (e.name === "TokenExpiredError") {
+export const checkRefreshToken: RequestHandler = async (req, res, next) => {
+  try {
+    const refreshToken = req.headers.authorization?.split(" ").at(-1);
+    if (!refreshToken) {
+      res.status(400).send({ code: 400, error: "잘못된 요청입니다." });
+      return;
     }
-
-    res.locals.accessToken = decoded;
-  });
-  next();
+    jwt.verify(refreshToken, SECRET, verifyCallback(res, next, 420));
+  } catch (e) {
+    console.error(e);
+    next(e);
+  }
 };
-
 export const updateToken: RequestHandler = async (req, res, next) => {
   try {
-    const { refreshToken } = req.body;
-    jwt.verify(refreshToken, SECRET, verifyCallback(res, 420));
-
-    const {
-      accessToken: { id },
-    } = res.locals;
-    const user = await User.findOne({ id });
+    const { id } = res.locals.accessToken;
+    const user = await User.findOne({ _id: id });
     if (user) {
-      const accessToken = setToken({ id }, "1h");
+      const accessToken = setToken({ id }, "10m");
+      const refreshToken = setToken({ id }, "1d");
+      res.cookie("v_rt", refreshToken, { maxAge: 60 * 60 * 24 * 1000, secure: true, httpOnly: true, sameSite: "strict", path: "/api/refresh" });
       res.status(200).send({ accessToken });
       return;
     }
@@ -43,13 +39,12 @@ export const updateToken: RequestHandler = async (req, res, next) => {
 
 export const verifyToken: RequestHandler = (req, res, next) => {
   try {
-    const token = req.cookies["v_at"];
-    if (!token) {
+    const accessToken = req.headers.authorization?.split(" ").at(-1);
+    // console.log(accessToken);
+    if (!accessToken) {
       return res.status(401).send({ code: 401, error: "토큰이 존재하지 않습니다." });
     }
-
-    jwt.verify(token, SECRET, verifyCallback(res, 419));
-    next();
+    jwt.verify(accessToken, SECRET, verifyCallback(res, next, 419));
   } catch (e) {
     console.error(e);
     next(e);
@@ -61,20 +56,22 @@ export const setToken = (id: object, time?: string) => {
   return newToken;
 };
 
-const verifyCallback = (res: Params[1], code: number) => (e: any, decoded: any) => {
+const verifyCallback = (res: Params[1], next: Params[2], code: number) => (e: any, decoded: any) => {
   if (decoded) {
     res.locals.accessToken = decoded;
-    return;
+    return next();
   }
 
   if (e.name === "TokenExpiredError") {
-    return res.status(code).json({
+    res.status(code).json({
       code: code,
       error: "토큰이 만료되었습니다.",
     });
+    return;
   }
-  return res.status(401).json({
+  res.status(401).json({
     code: 401,
     error: "유효하지 않은 토큰입니다.",
   });
+  return;
 };
