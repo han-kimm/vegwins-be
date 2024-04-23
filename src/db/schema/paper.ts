@@ -10,11 +10,11 @@ export interface IPaper {
   comment?: string[];
   imageUrl?: string;
   hashtag: string[];
-  rating?: {
+  rating: {
     [0]?: number;
     [1]?: number;
     [2]?: number;
-    length: number;
+    length?: number;
   };
   end: boolean;
   view: number;

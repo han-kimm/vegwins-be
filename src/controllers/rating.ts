@@ -1,6 +1,4 @@
 import { RequestHandler } from "express";
-import User from "../db/schema/user";
-import Paper from "../db/schema/paper";
 import { findPaperById, findUserById } from "../db/utils";
 
 export const getRating: RequestHandler = async (req, res, next) => {
@@ -43,7 +41,7 @@ export const updateRating: RequestHandler = async (req, res, next) => {
     const paper = await findPaperById(paperId, res);
 
     const previousRating = paper.rating;
-    if (!previousRating) {
+    if (!previousRating.length) {
       paper.rating = { [rating]: 1, length: 1 };
     } else if (!userPreviousRating) {
       paper.rating = { ...previousRating, [rating]: (previousRating[rating] ?? 0) + 1, length: previousRating.length + 1 };
@@ -67,10 +65,10 @@ export const deleteRating: RequestHandler = async (req, res, next) => {
 
     const paper = await findPaperById(paperId, res);
     const previousRating = paper.rating;
-    if (previousRating) {
+    if (previousRating.length) {
       paper.rating = { ...previousRating, [rating]: previousRating[rating]! - 1, length: previousRating.length! - 1 };
+      paper.save();
     }
-    paper.save();
 
     const { id: userId } = res.locals.accessToken;
     const user = await findUserById(userId, res);
