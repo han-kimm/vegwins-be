@@ -40,7 +40,6 @@ export const updateToken: RequestHandler = async (req, res, next) => {
 export const verifyToken: RequestHandler = (req, res, next) => {
   try {
     const accessToken = req.headers.authorization?.split(" ").at(-1);
-    // console.log(accessToken);
     if (!accessToken) {
       return res.status(401).send({ code: 401, error: "토큰이 존재하지 않습니다." });
     }

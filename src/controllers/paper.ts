@@ -1,6 +1,7 @@
 import { RequestHandler } from "express";
 import { HydratedDocument } from "mongoose";
 import Paper, { IPaper } from "../db/schema/paper";
+import User from "../db/schema/user";
 
 export const getPaper: RequestHandler = async (req, res, next) => {
   try {
@@ -47,6 +48,15 @@ export const postPaper: RequestHandler = async (req, res, next) => {
   try {
     const { id } = res.locals.accessToken;
     const newPaper = await Paper.create({ ...req.body, writer: id });
+
+    const writer = await User.findOne({ _id: id });
+    if (!writer) {
+      res.status(400).send({ code: 400, error: "해당 유저가 존재하지 않습니다." });
+      return;
+    }
+    writer.paper.push(newPaper._id);
+    writer.save();
+
     res.status(201).send({ paperId: newPaper.id });
     return;
   } catch (e) {
