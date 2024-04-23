@@ -1,16 +1,17 @@
 import { RequestHandler } from "express";
 import User from "../db/schema/user";
 import Paper from "../db/schema/paper";
+import { findPaperById, findUserById } from "../db/utils";
 
 export const getRating: RequestHandler = async (req, res, next) => {
   try {
     const { paperId } = req.params;
-    const { id: _id } = res.locals.accessToken;
+    const { id: userId } = res.locals.accessToken;
     const data = { isWriter: res.locals.isWriter, rating: -1 };
 
-    const user = await User.findOne({ _id });
-    const ratings = user?.rating;
-    if (!ratings?.length) {
+    const user = await findUserById(userId, res);
+    const ratings = user.rating;
+    if (!ratings.length) {
       res.send(data);
       return;
     }
@@ -29,11 +30,7 @@ export const updateRating: RequestHandler = async (req, res, next) => {
     const { paperId } = req.params;
     const rating = req.body.rating as 0 | 1 | 2;
 
-    const paper = await Paper.findOne({ _id: paperId });
-    if (!paper) {
-      res.status(400).send({ code: 400, error: "해당 문서가 존재하지 않습니다." });
-      return;
-    }
+    const paper = await findPaperById(paperId, res);
 
     const previousRating = paper.rating;
     if (!previousRating) {
@@ -43,16 +40,12 @@ export const updateRating: RequestHandler = async (req, res, next) => {
     }
     paper.save();
 
-    const { id: _id } = res.locals.accessToken;
-    const user = await User.findOne({ _id });
-    if (!user) {
-      res.status(400).send({ code: 400, error: "해당 유저가 존재하지 않습니다." });
-      return;
-    }
+    const { id: userId } = res.locals.accessToken;
+    const user = await findUserById(userId, res);
 
     const userRating = user.rating;
-    const previoustRating = userRating.id(paperId);
-    if (previoustRating) {
+    const userPreviousRating = userRating.id(paperId);
+    if (userPreviousRating) {
       userRating.pull(paperId);
     }
     userRating.push({ _id: paperId, rating });
@@ -70,11 +63,7 @@ export const deleteRating: RequestHandler = async (req, res, next) => {
     const { paperId } = req.params;
     const rating = req.body.rating as 0 | 1 | 2;
 
-    const paper = await Paper.findOne({ _id: paperId });
-    if (!paper) {
-      res.status(400).send({ code: 400, error: "해당 문서가 존재하지 않습니다." });
-      return;
-    }
+    const paper = await findPaperById(paperId, res);
 
     const previousRating = paper.rating;
     if (previousRating) {
@@ -82,12 +71,8 @@ export const deleteRating: RequestHandler = async (req, res, next) => {
     }
     paper.save();
 
-    const { id: _id } = res.locals.accessToken;
-    const user = await User.findOne({ _id });
-    if (!user) {
-      res.status(400).send({ code: 400, error: "해당 유저가 존재하지 않습니다." });
-      return;
-    }
+    const { id: userId } = res.locals.accessToken;
+    const user = await findUserById(userId, res);
     const userRating = user.rating;
     const previoustRating = userRating.id(paperId);
     if (previoustRating) {

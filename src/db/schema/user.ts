@@ -8,7 +8,7 @@ type StringMember = {
   [key in StringKey]: String;
 };
 
-interface IUser extends StringMember {
+export interface IUser extends StringMember {
   provider: "google";
   paper: Types.DocumentArray<IPaper>;
   comment: Types.DocumentArray<any>;

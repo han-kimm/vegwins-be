@@ -1,7 +1,7 @@
 import { RequestHandler } from "express";
 import { HydratedDocument } from "mongoose";
 import Paper, { IPaper } from "../db/schema/paper";
-import User from "../db/schema/user";
+import { findPaperById, findUserById } from "../db/utils";
 
 export const getPaper: RequestHandler = async (req, res, next) => {
   try {
@@ -29,11 +29,7 @@ export const getPaper: RequestHandler = async (req, res, next) => {
 export const getOnePaper: RequestHandler = async (req, res, next) => {
   try {
     const { paperId } = req.params;
-    const paper = await Paper.findOne({ _id: paperId }).populate("writer", "nickname");
-    if (!paper) {
-      res.status(404).send({ code: 404, error: "해당 문서가 존재하지 않습니다." });
-      return;
-    }
+    const paper = await findPaperById(paperId, res);
     paper.view++;
     paper.save();
 
@@ -49,11 +45,7 @@ export const postPaper: RequestHandler = async (req, res, next) => {
     const { id } = res.locals.accessToken;
     const newPaper = await Paper.create({ ...req.body, writer: id });
 
-    const writer = await User.findOne({ _id: id });
-    if (!writer) {
-      res.status(400).send({ code: 400, error: "해당 유저가 존재하지 않습니다." });
-      return;
-    }
+    const writer = await findUserById(id, res);
     writer.paper.push(newPaper._id);
     writer.save();
 
@@ -68,8 +60,8 @@ export const postPaper: RequestHandler = async (req, res, next) => {
 export const canEdit: RequestHandler = async (req, res, next) => {
   try {
     const { id: userId } = res.locals.accessToken;
-    const { paperId: _id } = req.params;
-    const paper = await Paper.findOne({ _id });
+    const { paperId } = req.params;
+    const paper = await findPaperById(paperId, res);
     const isWriter = userId === paper?.writer._id.toString();
     res.send({ isWriter });
   } catch (e) {
