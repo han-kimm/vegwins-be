@@ -2,7 +2,7 @@ import { Router } from "express";
 import { canEdit, getOnePaper, getPaper, postPaper } from "../controllers/paper";
 import { verifyToken } from "../middlewares/jwt";
 import { deleteRating, getRating, updateRating } from "../controllers/rating";
-import { postComment } from "../controllers/comment";
+import { getComment, postComment } from "../controllers/comment";
 
 const paperRouter = Router();
 
@@ -17,6 +17,7 @@ paperRouter.get("/:paperId/rating", verifyToken, getRating);
 paperRouter.post("/:paperId/rating", verifyToken, updateRating);
 paperRouter.delete("/:paperId/rating", verifyToken, deleteRating);
 
+paperRouter.get("/:paperId/comment", getComment);
 paperRouter.post("/:paperId/comment", verifyToken, postComment);
 
 export default paperRouter;

@@ -4,7 +4,9 @@ import { REQUIRED } from "../../constants/errorMessage";
 export interface IComment {
   commenter: Types.ObjectId;
   content: string;
+  paper: Types.ObjectId;
   recomment: Types.DocumentArray<Types.ObjectId>;
+  re: boolean;
 }
 
 const commentSchema = new mongoose.Schema<IComment>(
@@ -18,12 +20,20 @@ const commentSchema = new mongoose.Schema<IComment>(
       type: String,
       required: [true, REQUIRED],
     },
+    paper: {
+      type: Schema.Types.ObjectId,
+      required: [true, REQUIRED],
+    },
     recomment: [
       {
         type: Schema.Types.ObjectId,
         ref: "Comment",
       },
     ],
+    re: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     timestamps: {
