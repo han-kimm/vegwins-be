@@ -1,7 +1,7 @@
 import mongoose, { Schema, Types } from "mongoose";
 import { REQUIRED } from "../../constants/errorMessage";
 
-interface IComment {
+export interface IComment {
   commenter: Types.ObjectId;
   content: string;
   recomment: Types.DocumentArray<Types.ObjectId>;
@@ -33,4 +33,5 @@ const commentSchema = new mongoose.Schema<IComment>(
   }
 );
 
-export default mongoose.model("Comment", commentSchema);
+const Comment = mongoose.model("Comment", commentSchema);
+export default Comment;
