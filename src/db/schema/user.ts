@@ -10,8 +10,8 @@ type StringMember = {
 
 export interface IUser extends StringMember {
   provider: "google";
-  paper: Types.DocumentArray<IPaper>;
-  comment: Types.DocumentArray<any>;
+  paper: Types.DocumentArray<Types.ObjectId>;
+  comment: Types.DocumentArray<Types.ObjectId>;
   rating: Types.DocumentArray<{ _id: Types.ObjectId; rating: number }>;
 }
 

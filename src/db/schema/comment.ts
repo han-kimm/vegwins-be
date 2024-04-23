@@ -1,10 +1,16 @@
-import mongoose from "mongoose";
+import mongoose, { Schema, Types } from "mongoose";
 import { REQUIRED } from "../../constants/errorMessage";
 
-const commentSchema = new mongoose.Schema(
+interface IComment {
+  commenter: Types.ObjectId;
+  content: string;
+  recomment: Types.DocumentArray<Types.ObjectId>;
+}
+
+const commentSchema = new mongoose.Schema<IComment>(
   {
-    writer: {
-      type: String,
+    commenter: {
+      type: Schema.Types.ObjectId,
       ref: "User",
       required: [true, REQUIRED],
     },
@@ -14,7 +20,7 @@ const commentSchema = new mongoose.Schema(
     },
     recomment: [
       {
-        type: String,
+        type: Schema.Types.ObjectId,
         ref: "Comment",
       },
     ],

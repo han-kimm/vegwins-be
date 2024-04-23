@@ -1,5 +1,4 @@
 import { RequestHandler } from "express";
-import User from "../db/schema/user";
 import { findUserById } from "../db/utils";
 
 export const postComment: RequestHandler = async (req, res, next) => {
