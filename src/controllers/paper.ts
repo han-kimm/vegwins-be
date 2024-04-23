@@ -9,15 +9,23 @@ export const getPaper: RequestHandler = async (req, res, next) => {
     const k = req.query.k as string;
 
     let papers: HydratedDocument<IPaper>[];
-    if (c && k) {
-      papers = await Paper.find({ ...makeKeywordQuery(k), category: c }).select("title end imageUrl hashtag rating view");
+    if (c === "주간 조회수") {
+      papers = await Paper.find({ ...(k ? makeKeywordQuery(k) : {}) })
+        .sort({ view: -1 })
+        .select("title end imageUrl hashtag view");
+    } else if (c === "좋은 평가") {
+      papers = await Paper.find({ ...(k ? makeKeywordQuery(k) : {}) }).select("title end imageUrl hashtag rated");
+      console.log(papers);
+    } else if (c && k) {
+      papers = await Paper.find({ ...makeKeywordQuery(k), category: c }).select("title end imageUrl hashtag rated");
     } else if (c) {
-      papers = await Paper.find({ category: c }).select("title end imageUrl hashtag rating view").sort({ createdAt: -1 });
+      papers = await Paper.find({ category: c }).select("title end imageUrl hashtag rated").sort({ createdAt: -1 });
     } else if (k) {
-      papers = await Paper.find({ ...makeKeywordQuery(k) }).select("title end imageUrl hashtag rating view");
+      papers = await Paper.find({ ...makeKeywordQuery(k) }).select("title end imageUrl hashtag rated");
     } else {
-      papers = await Paper.find({}).select("title end imageUrl hashtag rating view").sort({ rated: -1 });
+      papers = await Paper.find({}).select("title end imageUrl hashtag rated rating.length");
     }
+
     res.send(papers);
     return;
   } catch (e) {

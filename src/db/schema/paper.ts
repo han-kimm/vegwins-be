@@ -18,6 +18,7 @@ export interface IPaper {
   };
   end: boolean;
   view: number;
+  rated: number;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -59,18 +60,22 @@ const paperSchema = new mongoose.Schema<IPaper>(
       type: Number,
       default: 0,
     },
+    rated: {
+      type: Number,
+    },
   },
   {
     timestamps: true,
-    toJSON: { virtuals: true },
   }
 );
 
-paperSchema.virtual("rated").get(function () {
+paperSchema.pre("save", function (this: IPaper, next) {
   if (this.rating) {
-    return Math.floor(((this.rating[1] ?? 0) * 50 + (this.rating[2] ?? 0) * 100) / (this.rating.length ?? 1));
+    this.rated = Math.floor(((this.rating[1] ?? 0) * 50 + (this.rating[2] ?? 0) * 100) / (this.rating.length ?? 1));
+    return next();
   }
-  return 0;
+  this.rated = 0;
+  return next();
 });
 
 const Paper = mongoose.model<IPaper>("Paper", paperSchema);

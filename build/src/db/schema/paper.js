@@ -61,16 +61,20 @@ const paperSchema = new mongoose_1.default.Schema({
         type: Number,
         default: 0,
     },
+    rated: {
+        type: Number,
+    },
 }, {
     timestamps: true,
-    toJSON: { virtuals: true },
 });
-paperSchema.virtual("rated").get(function () {
+paperSchema.pre("save", function (next) {
     var _a, _b, _c;
     if (this.rating) {
-        return Math.floor((((_a = this.rating[1]) !== null && _a !== void 0 ? _a : 0) * 50 + ((_b = this.rating[2]) !== null && _b !== void 0 ? _b : 0) * 100) / ((_c = this.rating.length) !== null && _c !== void 0 ? _c : 1));
+        this.rated = Math.floor((((_a = this.rating[1]) !== null && _a !== void 0 ? _a : 0) * 50 + ((_b = this.rating[2]) !== null && _b !== void 0 ? _b : 0) * 100) / ((_c = this.rating.length) !== null && _c !== void 0 ? _c : 1));
+        return next();
     }
-    return 0;
+    this.rated = 0;
+    return next();
 });
 const Paper = mongoose_1.default.model("Paper", paperSchema);
 exports.default = Paper;
