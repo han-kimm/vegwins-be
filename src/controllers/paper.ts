@@ -14,16 +14,17 @@ export const getPaper: RequestHandler = async (req, res, next) => {
         .sort({ view: -1 })
         .select("title end imageUrl hashtag view");
     } else if (c === "좋은 평가") {
-      papers = await Paper.find({ ...(k ? makeKeywordQuery(k) : {}) }).select("title end imageUrl hashtag rated");
-      console.log(papers);
+      papers = await Paper.find({ ...(k ? makeKeywordQuery(k) : {}) })
+        .select("title end imageUrl hashtag rated")
+        .sort({ rated: -1 });
     } else if (c && k) {
       papers = await Paper.find({ ...makeKeywordQuery(k), category: c }).select("title end imageUrl hashtag rated");
     } else if (c) {
-      papers = await Paper.find({ category: c }).select("title end imageUrl hashtag rated").sort({ createdAt: -1 });
+      papers = await Paper.find({ category: c }).select("title end imageUrl hashtag rated");
     } else if (k) {
       papers = await Paper.find({ ...makeKeywordQuery(k) }).select("title end imageUrl hashtag rated");
     } else {
-      papers = await Paper.find({}).select("title end imageUrl hashtag rated rating.length");
+      papers = await Paper.find({}).select("title end imageUrl hashtag rated rating.length").sort({ createdAt: -1 });
     }
 
     res.send(papers);
