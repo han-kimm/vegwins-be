@@ -29,20 +29,9 @@ export const updateRating: RequestHandler = async (req, res, next) => {
   try {
     const { paperId } = req.params;
     const rating = req.body.rating as 0 | 1 | 2;
-
-    const paper = await findPaperById(paperId, res);
-
-    const previousRating = paper.rating;
-    if (!previousRating) {
-      paper.rating = { [rating]: 1, length: 1 };
-    } else {
-      paper.rating = { ...previousRating, [rating]: (previousRating[rating] ?? 0) + 1, length: (previousRating.length ?? 0) + 1 };
-    }
-    paper.save();
-
     const { id: userId } = res.locals.accessToken;
-    const user = await findUserById(userId, res);
 
+    const user = await findUserById(userId, res);
     const userRating = user.rating;
     const userPreviousRating = userRating.id(paperId);
     if (userPreviousRating) {
@@ -50,6 +39,19 @@ export const updateRating: RequestHandler = async (req, res, next) => {
     }
     userRating.push({ _id: paperId, rating });
     user.save();
+
+    const paper = await findPaperById(paperId, res);
+
+    const previousRating = paper.rating;
+    if (!previousRating) {
+      paper.rating = { [rating]: 1, length: 1 };
+    } else if (!userPreviousRating) {
+      paper.rating = { ...previousRating, [rating]: (previousRating[rating] ?? 0) + 1, length: previousRating.length + 1 };
+    } else if (userPreviousRating) {
+      const deleteRating = userPreviousRating.rating as 0 | 1 | 2;
+      paper.rating = { ...previousRating, [rating]: (previousRating[rating] ?? 0) + 1, [deleteRating]: previousRating[deleteRating]! - 1 };
+    }
+    paper.save();
 
     res.send({ rating });
   } catch (e) {
@@ -64,7 +66,6 @@ export const deleteRating: RequestHandler = async (req, res, next) => {
     const rating = req.body.rating as 0 | 1 | 2;
 
     const paper = await findPaperById(paperId, res);
-
     const previousRating = paper.rating;
     if (previousRating) {
       paper.rating = { ...previousRating, [rating]: previousRating[rating]! - 1, length: previousRating.length! - 1 };
