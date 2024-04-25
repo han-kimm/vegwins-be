@@ -2,6 +2,7 @@ import { Router } from "express";
 import paperRouter from "./paper";
 import authRouter from "./auth";
 import cors from "cors";
+import userRouter from "./user";
 
 const indexRouter = Router();
 
@@ -18,5 +19,6 @@ indexRouter.get("/", (_, res) => {
 
 indexRouter.use("/auth", authRouter);
 indexRouter.use("/paper", paperRouter);
+indexRouter.use("/user", userRouter);
 
 export default indexRouter;

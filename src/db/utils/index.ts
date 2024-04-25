@@ -1,14 +1,23 @@
 import { Response } from "express";
 import Comment from "../schema/comment";
 import Paper from "../schema/paper";
-import User from "../schema/user";
+import User, { IUser } from "../schema/user";
+import { UpdateQuery } from "mongoose";
 
 export const findUserById = async (id: string, res: Response) => {
-  const writer = (await User.findOne({ _id: id }))!;
-  if (!writer) {
+  const user = (await User.findOne({ _id: id }))!;
+  if (!user) {
     res.status(400).send({ code: 400, error: "해당 유저가 존재하지 않습니다." });
   }
-  return writer;
+  return user;
+};
+
+export const findUserByIdAndUpdate = async (id: string, update: UpdateQuery<IUser>, res: Response) => {
+  const user = (await User.findByIdAndUpdate(id, update))!;
+  if (!user) {
+    res.status(400).send({ code: 400, error: "해당 유저가 존재하지 않습니다." });
+  }
+  return user;
 };
 
 export const findPaperById = async (id: string, res: Response) => {
