@@ -1,6 +1,7 @@
 import { RequestHandler } from "express";
 import { findUserByIdAndUpdate } from "../db/utils";
 import User from "../db/schema/user";
+import Paper from "../db/schema/paper";
 
 export const nicknameChange: RequestHandler = async (req, res, next) => {
   try {
@@ -15,6 +16,18 @@ export const nicknameChange: RequestHandler = async (req, res, next) => {
     }
     const user = await findUserByIdAndUpdate(id, { nickname: newNickname }, res);
     res.send({ nickname: newNickname });
+  } catch (e) {
+    console.error(e);
+    next(e);
+  }
+};
+
+export const getUserPaper: RequestHandler = async (_, res, next) => {
+  try {
+    const { id } = res.locals.accessToken;
+
+    const userPapers = await Paper.find({ writer: id }).select("title end imageUrl hashtag rated rating.length").sort({ createdAt: -1 });
+    res.send(userPapers);
   } catch (e) {
     console.error(e);
     next(e);
