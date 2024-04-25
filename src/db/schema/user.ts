@@ -48,7 +48,10 @@ const userSchema = new mongoose.Schema<IUser>(
     ],
     rating: [
       {
-        _id: Schema.Types.ObjectId,
+        _id: {
+          type: Schema.Types.ObjectId,
+          ref: "Paper",
+        },
         rating: Number,
       },
     ],

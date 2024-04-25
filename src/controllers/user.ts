@@ -49,3 +49,19 @@ export const getUserComment: RequestHandler = async (_, res, next) => {
     next(e);
   }
 };
+
+export const getUserRating: RequestHandler = async (_, res, next) => {
+  try {
+    const { id } = res.locals.accessToken;
+
+    const user = await User.findOne({ _id: id }).populate({
+      path: "rating._id",
+      model: "Paper",
+      select: "title end imageUrl hashtag rated rating.length",
+    });
+    res.send(user?.rating);
+  } catch (e) {
+    console.error(e);
+    next(e);
+  }
+};

@@ -57,7 +57,10 @@ const userSchema = new mongoose_1.default.Schema({
     ],
     rating: [
         {
-            _id: mongoose_1.Schema.Types.ObjectId,
+            _id: {
+                type: mongoose_1.Schema.Types.ObjectId,
+                ref: "Paper",
+            },
             rating: Number,
         },
     ],
