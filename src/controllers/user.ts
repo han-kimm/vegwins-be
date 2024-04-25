@@ -2,6 +2,7 @@ import { RequestHandler } from "express";
 import { findUserByIdAndUpdate } from "../db/utils";
 import User from "../db/schema/user";
 import Paper from "../db/schema/paper";
+import Comment from "../db/schema/comment";
 
 export const nicknameChange: RequestHandler = async (req, res, next) => {
   try {
@@ -28,6 +29,21 @@ export const getUserPaper: RequestHandler = async (_, res, next) => {
 
     const userPapers = await Paper.find({ writer: id }).select("title end imageUrl hashtag rated rating.length").sort({ createdAt: -1 });
     res.send(userPapers);
+  } catch (e) {
+    console.error(e);
+    next(e);
+  }
+};
+
+export const getUserComment: RequestHandler = async (_, res, next) => {
+  try {
+    const { id } = res.locals.accessToken;
+
+    const userComments = await await Comment.find({ commenter: id })
+      .select("commenter content recomment createdAt")
+      .populate("commenter", "nickname");
+
+    res.send(userComments);
   } catch (e) {
     console.error(e);
     next(e);
