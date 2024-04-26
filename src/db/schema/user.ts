@@ -1,7 +1,5 @@
-import { ObjectId } from "mongodb";
 import mongoose, { Schema, Types } from "mongoose";
 import { MAXLENGTH, PROVIDER, REQUIRED } from "../../constants/errorMessage";
-import { IPaper } from "./paper";
 
 type StringKey = "sub" | "nickname";
 type StringMember = {
@@ -12,6 +10,7 @@ export interface IUser extends StringMember {
   provider: "google";
   paper: Types.DocumentArray<Types.ObjectId>;
   comment: Types.DocumentArray<Types.ObjectId>;
+  notification: Types.DocumentArray<Types.ObjectId>;
   rating: Types.DocumentArray<{ _id: Types.ObjectId; rating: number }>;
 }
 
@@ -53,6 +52,12 @@ const userSchema = new mongoose.Schema<IUser>(
           ref: "Paper",
         },
         rating: Number,
+      },
+    ],
+    notification: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Notification",
       },
     ],
   },

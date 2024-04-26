@@ -15,7 +15,7 @@ export const nicknameChange: RequestHandler = async (req, res, next) => {
     if (isTakenNickname) {
       return res.status(400).send({ code: 400, error: "이미 사용 중인 닉네임입니다." });
     }
-    const user = await findUserByIdAndUpdate(id, { nickname: newNickname }, res);
+    await findUserByIdAndUpdate(id, { nickname: newNickname }, res);
     res.send({ nickname: newNickname });
   } catch (e) {
     console.error(e);
