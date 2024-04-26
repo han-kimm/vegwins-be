@@ -20,7 +20,7 @@ export const getNotification: RequestHandler = async (_, res, next) => {
 export const deleteNotification: RequestHandler = async (req, res, next) => {
   try {
     const { id } = res.locals.accessToken;
-    const { id: deleteId, all } = req.body;
+    const { deleteId, all } = req.body;
 
     if (all) {
       await Notification.deleteMany({ user: id });
