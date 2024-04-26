@@ -1,5 +1,6 @@
 import { RequestHandler } from "express";
 import { findPaperById, findUserById } from "../db/utils";
+import Notification from "../db/schema/notification";
 
 export const getRating: RequestHandler = async (req, res, next) => {
   try {
@@ -50,6 +51,10 @@ export const updateRating: RequestHandler = async (req, res, next) => {
       paper.rating = { ...previousRating, [rating]: (previousRating[rating] ?? 0) + 1, [deleteRating]: previousRating[deleteRating]! - 1 };
     }
     paper.save();
+
+    if (paper.rating.length === 10) {
+      await Notification.create({ user: paper?.writer, type: "rating", paper });
+    }
 
     res.send({ rating });
   } catch (e) {

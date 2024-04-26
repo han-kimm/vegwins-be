@@ -13,6 +13,6 @@ const nicknameMaker = (sub: string) => {
     name += arr[Math.floor(Math.random() * arr.length)] + spacing;
   }
 
-  return name + sub.slice(0, 2);
+  return name + sub.slice(-2);
 };
 export default nicknameMaker;

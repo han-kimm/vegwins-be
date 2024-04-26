@@ -1,6 +1,8 @@
 import { RequestHandler } from "express";
 import Comment from "../db/schema/comment";
 import { findCommentById, findUserById } from "../db/utils";
+import Notification from "../db/schema/notification";
+import Paper from "../db/schema/paper";
 
 export const getComment: RequestHandler = async (req, res, next) => {
   try {
@@ -37,8 +39,8 @@ export const postComment: RequestHandler = async (req, res, next) => {
     }
 
     const commenter = await findUserById(id, res);
-
     const newComment = await Comment.create({ commenter, content, paper: paperId });
+
     if (recommentId) {
       const targetComment = await findCommentById(recommentId, res);
       targetComment.recomment.push(newComment._id);
@@ -49,6 +51,17 @@ export const postComment: RequestHandler = async (req, res, next) => {
 
     commenter.comment.push(newComment._id);
     commenter.save();
+
+    const paper = await Paper.findOne({ _id: paperId });
+
+    if (commenter._id !== paper?.writer) {
+      await Notification.create({
+        user: newComment.re ? commenter._id : paper?.writer,
+        type: newComment.re ? "recomment" : "comment",
+        paper: paperId,
+        comment: newComment._id,
+      });
+    }
 
     res.status(201).send({ success: "댓글 작성이 완료되었습니다" });
   } catch (e) {

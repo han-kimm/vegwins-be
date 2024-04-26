@@ -2,6 +2,7 @@ import { RequestHandler } from "express";
 import { HydratedDocument } from "mongoose";
 import Paper, { IPaper } from "../db/schema/paper";
 import { findPaperById, findUserById } from "../db/utils";
+import Notification from "../db/schema/notification";
 
 export const getPaper: RequestHandler = async (req, res, next) => {
   try {
@@ -41,6 +42,10 @@ export const getOnePaper: RequestHandler = async (req, res, next) => {
     const paper = await findPaperById(paperId, res);
     paper.view++;
     paper.save();
+
+    if (paper.view === 100) {
+      await Notification.create({ user: paper?.writer, type: "view", paper });
+    }
 
     res.send(paper);
   } catch (e) {

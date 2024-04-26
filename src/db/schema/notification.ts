@@ -2,13 +2,19 @@ import mongoose, { Schema, Types } from "mongoose";
 import { REQUIRED } from "../../constants/errorMessage";
 
 export interface IComment {
+  user: Types.ObjectId;
   type: "comment" | "recomment" | "view" | "rating";
   paper: Types.ObjectId;
-  comment: Types.ObjectId;
+  comment?: Types.ObjectId;
 }
 
 const notificationSchema = new mongoose.Schema<IComment>(
   {
+    user: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+      required: [true, REQUIRED],
+    },
     type: {
       type: String,
       enum: {

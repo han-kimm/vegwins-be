@@ -64,6 +64,12 @@ const userSchema = new mongoose_1.default.Schema({
             rating: Number,
         },
     ],
+    notification: [
+        {
+            type: mongoose_1.Schema.Types.ObjectId,
+            ref: "Notification",
+        },
+    ],
 }, {
     timestamps: {
         createdAt: true,
