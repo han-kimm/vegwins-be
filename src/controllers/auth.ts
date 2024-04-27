@@ -46,6 +46,10 @@ export const googleStrategy: RequestHandler = async (req, res, next) => {
     if (credential) {
       sub = await googleCredential(credential);
     }
+    if (!sub) {
+      res.status(400).send({ code: 400, error: "잘못된 로그인입니다." });
+      return;
+    }
 
     const currentUser = await User.findOne({ sub });
     if (!currentUser) {
@@ -69,5 +73,4 @@ export const googleStrategy: RequestHandler = async (req, res, next) => {
     console.error(e);
     next(e);
   }
-  res.status(400).send({ code: 400, error: "잘못된 로그인입니다." });
 };

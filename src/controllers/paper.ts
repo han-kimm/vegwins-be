@@ -57,13 +57,22 @@ export const getOnePaper: RequestHandler = async (req, res, next) => {
 export const postPaper: RequestHandler = async (req, res, next) => {
   try {
     const { id } = res.locals.accessToken;
-    const newPaper = await Paper.create({ ...req.body, writer: id });
+    console.log(req.body);
+    const noImageData = JSON.parse(req.body.data);
+    const file = req.file as Express.MulterS3.File;
+    let newPaper;
+    if (file) {
+      const { location } = file;
+      newPaper = await Paper.create({ ...noImageData, imageUrl: location, writer: id });
+    } else if (!file) {
+      newPaper = await Paper.create({ ...noImageData, writer: id });
+    }
 
     const writer = await findUserById(id, res);
-    writer.paper.push(newPaper._id);
+    writer.paper.push(newPaper!._id);
     writer.save();
 
-    res.status(201).send({ paperId: newPaper.id });
+    res.status(201).send({ paperId: newPaper!.id });
     return;
   } catch (e) {
     console.error(e);
