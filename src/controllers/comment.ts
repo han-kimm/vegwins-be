@@ -70,6 +70,26 @@ export const postComment: RequestHandler = async (req, res, next) => {
   }
 };
 
+export const putComment: RequestHandler = async (req, res, next) => {
+  try {
+    const { id } = res.locals.accessToken;
+    const { content, editId } = req.body;
+
+    const comment = await findCommentById(editId, res);
+    if (id !== comment.commenter.toString()) {
+      return res.status(400).send({ code: 400, error: "자신의 댓글만 수정할 수 있습니다." });
+    }
+
+    comment.content = content;
+    comment.save();
+
+    res.send({ success: "댓글 수정 완료" });
+  } catch (e) {
+    console.error(e);
+    next(e);
+  }
+};
+
 export const deleteComment: RequestHandler = async (req, res, next) => {
   try {
     const { id } = res.locals.accessToken;
