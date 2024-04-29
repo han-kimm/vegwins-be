@@ -57,7 +57,6 @@ export const getOnePaper: RequestHandler = async (req, res, next) => {
 export const postPaper: RequestHandler = async (req, res, next) => {
   try {
     const { id } = res.locals.accessToken;
-    console.log(req.body);
     const noImageData = JSON.parse(req.body.data);
     const file = req.file as Express.MulterS3.File;
     let newPaper;

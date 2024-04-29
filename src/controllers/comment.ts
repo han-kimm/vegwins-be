@@ -38,30 +38,39 @@ export const postComment: RequestHandler = async (req, res, next) => {
       return;
     }
 
+    const paper = await Paper.findOne({ _id: paperId });
     const commenter = await findUserById(id, res);
-    const newComment = await Comment.create({ commenter, content, paper: paperId });
 
+    const newComment = await Comment.create({ commenter, content, paper: paperId });
     if (recommentId) {
       const targetComment = await findCommentById(recommentId, res);
       targetComment.recomment.push(newComment._id);
       targetComment.save();
       newComment.re = true;
       newComment.save();
-    }
 
+      const notOriginCommenter = commenter.id !== targetComment.commenter.toString();
+      if (notOriginCommenter) {
+        await Notification.create({
+          user: targetComment.commenter,
+          type: "recomment",
+          paper: paperId,
+          comment: newComment._id,
+        });
+      }
+    } else {
+      const notWriter = commenter.id !== paper?.writer.toString();
+      if (notWriter) {
+        await Notification.create({
+          user: paper?.writer,
+          type: "comment",
+          paper: paperId,
+          comment: newComment._id,
+        });
+      }
+    }
     commenter.comment.push(newComment._id);
     commenter.save();
-
-    const paper = await Paper.findOne({ _id: paperId });
-
-    if (commenter._id !== paper?.writer) {
-      await Notification.create({
-        user: newComment.re ? commenter._id : paper?.writer,
-        type: newComment.re ? "recomment" : "comment",
-        paper: paperId,
-        comment: newComment._id,
-      });
-    }
 
     res.status(201).send({ success: "댓글 작성이 완료되었습니다" });
   } catch (e) {
