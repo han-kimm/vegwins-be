@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { canEdit, getOnePaper, getPaper, postPaper } from "../controllers/paper";
+import { canEdit, deletePaper, getEditPaper, getOnePaper, getPaper, postPaper, putPaper } from "../controllers/paper";
 import { verifyToken } from "../middlewares/jwt";
 import { deleteRating, getRating, updateRating } from "../controllers/rating";
 import { getComment, postComment, putComment } from "../controllers/comment";
@@ -32,6 +32,9 @@ paperRouter.get("/", getPaper);
 paperRouter.post("/", verifyToken, upload.single("image"), postPaper);
 
 paperRouter.get("/:paperId", getOnePaper);
+paperRouter.get("/:paperId/edit", getEditPaper);
+paperRouter.put("/:paperId", upload.single("image"), verifyToken, putPaper);
+paperRouter.delete("/:paperId", verifyToken, deletePaper);
 
 paperRouter.get("/:paperId/writer", verifyToken, canEdit);
 

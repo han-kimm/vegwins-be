@@ -3,6 +3,7 @@ import { HydratedDocument } from "mongoose";
 import Paper, { IPaper } from "../db/schema/paper";
 import { findPaperById, findUserById } from "../db/utils";
 import Notification from "../db/schema/notification";
+import Comment from "../db/schema/comment";
 
 export const getPaper: RequestHandler = async (req, res, next) => {
   try {
@@ -95,4 +96,61 @@ export const canEdit: RequestHandler = async (req, res, next) => {
 const makeKeywordQuery = (k: string) => {
   const REG = /#[a-z0-9_가-힣]+/;
   return REG.test(k) ? { hashtag: k } : { $text: { $search: k } };
+};
+
+export const getEditPaper: RequestHandler = async (req, res, next) => {
+  try {
+    const { paperId } = req.params;
+    const paper = await Paper.findById(paperId).select("imageUrl title category hashtag description");
+    res.send(paper);
+  } catch (e) {
+    console.error(e);
+    next(e);
+  }
+};
+
+export const putPaper: RequestHandler = async (req, res, next) => {
+  try {
+    const { paperId } = req.params;
+
+    const noImageData = JSON.parse(req.body.data);
+    const deleteImage = JSON.parse(req.body.deleteImage);
+    const file = req.file as Express.MulterS3.File;
+
+    if (file) {
+      const { location } = file;
+      await Paper.findByIdAndUpdate(paperId, { ...noImageData, imageUrl: location });
+    } else if (!file && deleteImage) {
+      await Paper.findByIdAndUpdate(paperId, { ...noImageData, imageUrl: "" });
+    } else {
+      await Paper.findByIdAndUpdate(paperId, { ...noImageData });
+    }
+
+    res.status(200).send({ paperId });
+  } catch (e) {
+    console.error(e);
+    next(e);
+  }
+};
+
+export const deletePaper: RequestHandler = async (req, res, next) => {
+  try {
+    const { id } = res.locals.accessToken;
+    const { paperId } = req.params;
+
+    const paper = await findPaperById(paperId, res);
+
+    if (paper.writer._id.toString() !== id) {
+      return res.status(400).send({ code: 400, error: "자신의 문서만 삭제할 수 있습니다." });
+    }
+
+    await Paper.findByIdAndDelete(paperId);
+    await Comment.deleteMany({ paper: paperId });
+    await Notification.deleteMany({ paper: paperId });
+
+    res.send({ success: "문서 삭제 완료" });
+  } catch (e) {
+    console.error(e);
+    next(e);
+  }
 };
