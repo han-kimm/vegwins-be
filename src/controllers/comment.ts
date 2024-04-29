@@ -40,10 +40,33 @@ export const postComment: RequestHandler = async (req, res, next) => {
 
     const paper = await Paper.findOne({ _id: paperId });
     const commenter = await findUserById(id, res);
-
     const newComment = await Comment.create({ commenter, content, paper: paperId });
     if (recommentId) {
       const targetComment = await findCommentById(recommentId, res);
+      await targetComment.populate({
+        path: "recomment",
+        model: "Comment",
+        select: "commenter",
+        populate: {
+          path: "commenter",
+          model: "User",
+          select: "id",
+        },
+      });
+
+      const notifiedTarget = new Set(targetComment.recomment.map((v) => v.commenter._id.toString()));
+      for (const targetId of [...notifiedTarget]) {
+        const notOriginCommenter = targetId !== targetComment.commenter.toString();
+        if (notOriginCommenter) {
+          await Notification.create({
+            user: targetId,
+            type: "recomment",
+            paper: paperId,
+            comment: newComment._id,
+          });
+        }
+      }
+
       targetComment.recomment.push(newComment._id);
       targetComment.save();
       newComment.re = true;

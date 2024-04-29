@@ -85,7 +85,7 @@ export const canEdit: RequestHandler = async (req, res, next) => {
     const { paperId } = req.params;
     const paper = await findPaperById(paperId, res);
     const isWriter = userId === paper?.writer._id.toString();
-    res.send({ isWriter });
+    res.send(isWriter);
   } catch (e) {
     console.error(e);
     next(e);

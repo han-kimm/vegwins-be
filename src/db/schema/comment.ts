@@ -5,7 +5,7 @@ export interface IComment {
   commenter: Types.ObjectId;
   content: string;
   paper: Types.ObjectId;
-  recomment: Types.DocumentArray<Types.ObjectId>;
+  recomment: Types.DocumentArray<IComment>;
   re: boolean;
 }
 

@@ -10,12 +10,12 @@ export const getRating: RequestHandler = async (req, res, next) => {
 
     const user = await findUserById(userId, res);
     const ratings = user.rating;
-    if (!ratings.length) {
+    const paperRating = ratings.id(paperId);
+    if (!paperRating) {
       res.send(data);
       return;
     }
-    const paperRating = ratings.id(paperId);
-    data.rating = paperRating?.rating ?? -1;
+    data.rating = paperRating.rating;
     res.send(data);
     return;
   } catch (e) {
