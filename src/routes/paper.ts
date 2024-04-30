@@ -33,7 +33,7 @@ paperRouter.post("/", verifyToken, upload.single("image"), postPaper);
 
 paperRouter.get("/:paperId", getOnePaper);
 paperRouter.get("/:paperId/edit", getEditPaper);
-paperRouter.put("/:paperId", upload.single("image"), verifyToken, putPaper);
+paperRouter.put("/:paperId", verifyToken, upload.single("image"), putPaper);
 paperRouter.delete("/:paperId", verifyToken, deletePaper);
 
 paperRouter.get("/:paperId/writer", verifyToken, canEdit);

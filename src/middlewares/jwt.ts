@@ -8,7 +8,7 @@ type Params = Parameters<RequestHandler>;
 
 export const checkRefreshToken: RequestHandler = async (req, res, next) => {
   try {
-    const refreshToken = req.headers.authorization?.split(" ").at(-1);
+    const { v_rt: refreshToken } = req.cookies;
     if (!refreshToken) {
       res.status(400).send({ code: 400, error: "잘못된 요청입니다." });
       return;
@@ -26,7 +26,8 @@ export const updateToken: RequestHandler = async (req, res, next) => {
     if (user) {
       const accessToken = setToken({ id }, "10m");
       const refreshToken = setToken({ id }, "1d");
-      res.cookie("v_rt", refreshToken, { maxAge: 60 * 60 * 24 * 1000, secure: true, httpOnly: true, sameSite: "strict", path: "/api/refresh" });
+      res.cookie("v_at", accessToken, { maxAge: 60 * 60 * 24 * 1000, secure: true, httpOnly: true, sameSite: "strict" });
+      res.cookie("v_rt", refreshToken, { maxAge: 60 * 60 * 24 * 1000, secure: true, httpOnly: true, sameSite: "strict", path: "/api/auth/refresh" });
       res.status(200).send({ accessToken });
       return;
     }
@@ -39,7 +40,7 @@ export const updateToken: RequestHandler = async (req, res, next) => {
 
 export const verifyToken: RequestHandler = (req, res, next) => {
   try {
-    const accessToken = req.headers.authorization?.split(" ").at(-1);
+    const { v_at: accessToken } = req.cookies;
     if (!accessToken) {
       return res.status(401).send({ code: 401, error: "토큰이 존재하지 않습니다." });
     }
