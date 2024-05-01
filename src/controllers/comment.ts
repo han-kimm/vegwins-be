@@ -91,7 +91,7 @@ export const postComment: RequestHandler = async (req, res, next) => {
         });
       }
     } else {
-      const notWriter = commenter.id !== paper?.writer.toString();
+      const notWriter = commenter.id !== paper.writer._id.toString();
       if (notWriter) {
         await Notification.create({
           user: paper?.writer,
