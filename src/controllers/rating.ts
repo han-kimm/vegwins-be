@@ -40,6 +40,11 @@ export const updateRating: RequestHandler = async (req, res, next) => {
     user.save();
 
     const paper = await findPaperById(paperId, res);
+    if (!paper) {
+      res.status(404).send({ code: 404, error: "해당 문서가 존재하지 않습니다." });
+      return;
+    }
+    paper.rater.push(userId);
 
     const previousRating = paper.rating;
     if (!previousRating.length) {
@@ -68,13 +73,6 @@ export const deleteRating: RequestHandler = async (req, res, next) => {
     const { paperId } = req.params;
     const rating = req.body.rating as 0 | 1 | 2;
 
-    const paper = await findPaperById(paperId, res);
-    const previousRating = paper.rating;
-    if (previousRating.length) {
-      paper.rating = { ...previousRating, [rating]: previousRating[rating]! - 1, length: previousRating.length! - 1 };
-      paper.save();
-    }
-
     const { id: userId } = res.locals.accessToken;
     const user = await findUserById(userId, res);
     const userRating = user.rating;
@@ -83,6 +81,18 @@ export const deleteRating: RequestHandler = async (req, res, next) => {
       userRating.pull(paperId);
     }
     user.save();
+
+    const paper = await findPaperById(paperId, res);
+    if (!paper) {
+      res.status(404).send({ code: 404, error: "해당 문서가 존재하지 않습니다." });
+      return;
+    }
+    const previousRating = paper.rating;
+    if (previousRating.length) {
+      paper.rating = { ...previousRating, [rating]: previousRating[rating]! - 1, length: previousRating.length! - 1 };
+      paper.rater.pull(userId);
+      paper.save();
+    }
 
     res.send({ rating: -1 });
   } catch (e) {

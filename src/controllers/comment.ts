@@ -1,6 +1,6 @@
 import { RequestHandler } from "express";
 import Comment from "../db/schema/comment";
-import { findCommentById, findUserById } from "../db/utils";
+import { findCommentById, findPaperById, findUserById } from "../db/utils";
 import Notification from "../db/schema/notification";
 import Paper from "../db/schema/paper";
 
@@ -38,7 +38,16 @@ export const postComment: RequestHandler = async (req, res, next) => {
       return;
     }
 
-    const paper = await Paper.findOne({ _id: paperId });
+    const paper = await findPaperById(paperId, res);
+    if (!paper) {
+      res.status(404).send({ code: 404, error: "해당 문서가 존재하지 않습니다." });
+      return;
+    }
+    if (!paper.commenter.find((c) => c.toString() === id)) {
+      paper.commenter.push(id);
+      paper.save();
+    }
+
     const commenter = await findUserById(id, res);
     const newComment = await Comment.create({ commenter, content, paper: paperId });
     if (recommentId) {
@@ -124,8 +133,20 @@ export const putComment: RequestHandler = async (req, res, next) => {
 
 export const deleteComment: RequestHandler = async (req, res, next) => {
   try {
+    const { paperId } = req.params;
     const { id } = res.locals.accessToken;
     const { deleteId, originId } = req.body;
+
+    const paper = await findPaperById(paperId, res);
+    if (!paper) {
+      res.status(404).send({ code: 404, error: "해당 문서가 존재하지 않습니다." });
+      return;
+    }
+    const userComments = await Comment.find({ paper: paperId, commenter: id });
+    if (!userComments.length) {
+      paper.commenter.pull(id);
+      paper.save();
+    }
 
     const user = await findUserById(id, res);
     const deleteComment = await findCommentById(deleteId, res);

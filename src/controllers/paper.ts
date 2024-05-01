@@ -4,6 +4,7 @@ import Paper, { IPaper } from "../db/schema/paper";
 import { findPaperById, findUserById } from "../db/utils";
 import Notification from "../db/schema/notification";
 import Comment from "../db/schema/comment";
+import User from "../db/schema/user";
 
 export const getPaper: RequestHandler = async (req, res, next) => {
   try {
@@ -41,6 +42,10 @@ export const getOnePaper: RequestHandler = async (req, res, next) => {
   try {
     const { paperId } = req.params;
     const paper = await findPaperById(paperId, res);
+    if (!paper) {
+      res.status(404).send({ code: 404, error: "해당 문서가 존재하지 않습니다." });
+      return;
+    }
     paper.view++;
     paper.save();
 
@@ -139,10 +144,30 @@ export const deletePaper: RequestHandler = async (req, res, next) => {
     const { paperId } = req.params;
 
     const paper = await findPaperById(paperId, res);
+    if (!paper) {
+      res.status(404).send({ code: 404, error: "해당 문서가 존재하지 않습니다." });
+      return;
+    }
 
     if (paper.writer._id.toString() !== id) {
       return res.status(400).send({ code: 400, error: "자신의 문서만 삭제할 수 있습니다." });
     }
+
+    const writer = await findUserById(paper.writer._id.toString(), res);
+    writer.paper.pull(paperId);
+
+    const commenters = await User.find({ _id: paper.commenter }).select("comment notification");
+    const comments = (await Comment.find({ paper: paperId }).select("id")).map((v) => v._id);
+    const notifications = (await Notification.find({ paper: paperId }).select("id")).map((v) => v._id);
+    commenters.map(
+      (commenter) => (
+        commenter.comment.filter((v) => comments.includes(v._id)),
+        commenter.notification.filter((v) => !notifications.includes(v._id)),
+        commenter.save()
+      )
+    );
+    const raters = await User.find({ _id: paper.rater }).select("rating");
+    raters.map((rater) => (rater.rating.pull(paperId), rater.save()));
 
     await Paper.findByIdAndDelete(paperId);
     await Comment.deleteMany({ paper: paperId });

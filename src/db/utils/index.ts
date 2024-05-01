@@ -21,11 +21,7 @@ export const findUserByIdAndUpdate = async (id: string, update: UpdateQuery<IUse
 };
 
 export const findPaperById = async (id: string, res: Response) => {
-  const paper = (await Paper.findOne({ _id: id }).populate("writer", "nickname"))!;
-  if (!paper) {
-    res.status(404).send({ code: 404, error: "해당 문서가 존재하지 않습니다." });
-  }
-  return paper;
+  return await Paper.findOne({ _id: id }).populate("writer", "nickname");
 };
 
 export const findCommentById = async (id: string, res: Response) => {

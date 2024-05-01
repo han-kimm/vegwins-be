@@ -2,7 +2,7 @@ import { Router } from "express";
 import { canEdit, deletePaper, getEditPaper, getOnePaper, getPaper, postPaper, putPaper } from "../controllers/paper";
 import { verifyToken } from "../middlewares/jwt";
 import { deleteRating, getRating, updateRating } from "../controllers/rating";
-import { getComment, postComment, putComment } from "../controllers/comment";
+import { deleteComment, getComment, postComment, putComment } from "../controllers/comment";
 import { S3Client } from "@aws-sdk/client-s3";
 import multer from "multer";
 import s3Storage from "multer-s3";
@@ -45,5 +45,6 @@ paperRouter.delete("/:paperId/rating", verifyToken, deleteRating);
 paperRouter.get("/:paperId/comment", getComment);
 paperRouter.post("/:paperId/comment", verifyToken, postComment);
 paperRouter.put("/:paperId/comment", verifyToken, putComment);
+paperRouter.delete("/:paperId/comment", verifyToken, deleteComment);
 
 export default paperRouter;

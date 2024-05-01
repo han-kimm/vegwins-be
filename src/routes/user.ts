@@ -1,8 +1,7 @@
 import { Router } from "express";
+import { deleteNotification, getNotification } from "../controllers/notification";
 import { getUserComment, getUserPaper, getUserRating, nicknameChange } from "../controllers/user";
 import { verifyToken } from "../middlewares/jwt";
-import { deleteNotification, getNotification } from "../controllers/notification";
-import { deleteComment } from "../controllers/comment";
 
 const userRouter = Router();
 
@@ -13,6 +12,5 @@ userRouter.get("/comment", verifyToken, getUserComment);
 userRouter.get("/rating", verifyToken, getUserRating);
 userRouter.get("/notification", verifyToken, getNotification);
 userRouter.delete("/notification", verifyToken, deleteNotification);
-userRouter.delete("/comment", verifyToken, deleteComment);
 
 export default userRouter;
