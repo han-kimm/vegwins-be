@@ -13,7 +13,7 @@ const googleCode = async (code: string) => {
       code,
       client_id,
       client_secret,
-      redirect_uri: "http://localhost:3000",
+      redirect_uri: "https://vegwins.vercel.app",
       // 팝업은 프론트에서 종료(redirect)되므로, 프론트 주소를 넣는다.
       grant_type: "authorization_code",
     }),
