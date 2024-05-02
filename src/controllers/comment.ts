@@ -1,8 +1,7 @@
 import { RequestHandler } from "express";
 import Comment from "../db/schema/comment";
-import { findCommentById, findPaperById, findUserById } from "../db/utils";
 import Notification from "../db/schema/notification";
-import Paper from "../db/schema/paper";
+import { findCommentById, findPaperById, findUserById } from "../db/utils";
 
 export const getComment: RequestHandler = async (req, res, next) => {
   try {

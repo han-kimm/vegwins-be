@@ -26,9 +26,9 @@ export const updateToken: RequestHandler = async (req, res, next) => {
     if (user) {
       const accessToken = setToken({ id }, "10m");
       const refreshToken = setToken({ id }, "1d");
-      res.cookie("v_at", accessToken, { maxAge: 60 * 60 * 24 * 1000, secure: true, httpOnly: true, sameSite: "strict" });
-      res.cookie("v_rt", refreshToken, { maxAge: 60 * 60 * 24 * 1000, secure: true, httpOnly: true, sameSite: "strict", path: "/api/auth/refresh" });
-      res.status(200).send({ accessToken });
+      // res.cookie("v_at", accessToken, { maxAge: 60 * 60 * 24 * 1000, secure: true, httpOnly: true, sameSite: "strict" });
+      // res.cookie("v_rt", refreshToken, { maxAge: 60 * 60 * 24 * 1000, secure: true, httpOnly: true, sameSite: "strict", path: "/api/auth/refresh" });
+      res.status(200).send({ accessToken, refreshToken });
       return;
     }
     res.status(400).send({ code: 400, error: "유효하지 않은 유저입니다." });
