@@ -66,21 +66,6 @@ export const googleStrategy: RequestHandler = async (req, res, next) => {
     }
     const accessToken = setToken({ id }, "10m");
     const refreshToken = setToken({ id }, "1d");
-    res.cookie("v_at", accessToken, {
-      maxAge: 60 * 60 * 24 * 1000,
-      secure: true,
-      httpOnly: true,
-      sameSite: "strict",
-      domain: process.env.CLIENT_DOMAIN,
-    });
-    res.cookie("v_rt", refreshToken, {
-      maxAge: 60 * 60 * 24 * 1000,
-      secure: true,
-      httpOnly: true,
-      sameSite: "strict",
-      domain: process.env.CLIENT_DOMAIN,
-      path: "/api/auth/refresh",
-    });
     res.status(200).send({ accessToken, refreshToken, nickname });
     return;
   } catch (e) {
