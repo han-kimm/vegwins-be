@@ -2,30 +2,8 @@ import { Router } from "express";
 import { deleteComment, getComment, postComment, putComment } from "../controllers/comment";
 import { canEdit, deletePaper, getEditPaper, getOnePaper, getPaper, postPaper, putPaper } from "../controllers/paper";
 import { deleteRating, getRating, updateRating } from "../controllers/rating";
+import { resizeImage, upload } from "../middlewares/image";
 import { verifyToken } from "../middlewares/jwt";
-import multer from "multer";
-import s3Storage from "multer-s3";
-import { S3Client } from "@aws-sdk/client-s3";
-import { resizeImage } from "../middlewares/image";
-
-export const s3 = new S3Client({
-  credentials: {
-    accessKeyId: process.env.S3_ACCESS_KEY || "",
-    secretAccessKey: process.env.S3_ACCESS_SECRET || "",
-  },
-  region: "ap-northeast-2",
-});
-
-const upload = multer({
-  storage: s3Storage({
-    s3,
-    bucket: "vegwins",
-    key(req, file, callback) {
-      callback(null, `${Date.now()}_${file.originalname}`);
-    },
-  }),
-  limits: { fieldSize: 3 * 1024 * 1024 },
-});
 
 const paperRouter = Router();
 

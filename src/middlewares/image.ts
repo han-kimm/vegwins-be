@@ -1,7 +1,27 @@
-import { DeleteObjectCommand, GetObjectCommand, PutObjectCommand } from "@aws-sdk/client-s3";
+import { DeleteObjectCommand, GetObjectCommand, PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { RequestHandler } from "express";
+import multer from "multer";
+import s3Storage from "multer-s3";
 import sharp from "sharp";
-import { s3 } from "../routes/paper";
+
+export const s3 = new S3Client({
+  credentials: {
+    accessKeyId: process.env.S3_ACCESS_KEY || "",
+    secretAccessKey: process.env.S3_ACCESS_SECRET || "",
+  },
+  region: "ap-northeast-2",
+});
+
+export const upload = multer({
+  storage: s3Storage({
+    s3,
+    bucket: "vegwins",
+    key(req, file, callback) {
+      callback(null, `${Date.now()}_${file.originalname}`);
+    },
+  }),
+  limits: { fieldSize: 5 * 1024 * 1024 },
+});
 
 export const resizeImage: RequestHandler = async (req, res, next) => {
   try {
