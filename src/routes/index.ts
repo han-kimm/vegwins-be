@@ -8,7 +8,7 @@ const indexRouter = Router();
 
 indexRouter.use(
   cors({
-    origin: ["http://localhost:3000", "https://vegwins.vercel.app"],
+    origin: ["http://localhost:3000", "https://vegwins.com"],
     credentials: true,
   })
 );
