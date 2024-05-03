@@ -5,6 +5,7 @@ import { findPaperById, findUserById } from "../db/utils";
 import Notification from "../db/schema/notification";
 import Comment from "../db/schema/comment";
 import User from "../db/schema/user";
+import { deleteS3Image } from "../middlewares/image";
 
 export const getPaper: RequestHandler = async (req, res, next) => {
   try {
@@ -61,10 +62,10 @@ export const getOnePaper: RequestHandler = async (req, res, next) => {
 };
 
 export const postPaper: RequestHandler = async (req, res, next) => {
+  const file = req.file as Express.MulterS3.File;
   try {
     const { id } = res.locals.accessToken;
     const noImageData = JSON.parse(req.body.data);
-    const file = req.file as Express.MulterS3.File;
     let newPaper;
     if (file) {
       const { location } = file;
@@ -80,6 +81,9 @@ export const postPaper: RequestHandler = async (req, res, next) => {
     res.status(201).send({ paperId: newPaper!.id });
     return;
   } catch (e) {
+    if (file) {
+      await deleteS3Image(file.location);
+    }
     console.error(e);
     next(e);
   }
@@ -115,17 +119,19 @@ export const getEditPaper: RequestHandler = async (req, res, next) => {
 };
 
 export const putPaper: RequestHandler = async (req, res, next) => {
+  const file = req.file as Express.MulterS3.File;
   try {
     const { paperId } = req.params;
-
+    const paper = await Paper.findById(paperId).select("imageUrl");
     const noImageData = JSON.parse(req.body.data);
     const deleteImage = JSON.parse(req.body.deleteImage);
-    const file = req.file as Express.MulterS3.File;
 
     if (file) {
+      await deleteS3Image(paper?.imageUrl);
       const { location } = file;
       await Paper.findByIdAndUpdate(paperId, { ...noImageData, imageUrl: location });
     } else if (!file && deleteImage) {
+      await deleteS3Image(paper?.imageUrl);
       await Paper.findByIdAndUpdate(paperId, { ...noImageData, imageUrl: "" });
     } else {
       await Paper.findByIdAndUpdate(paperId, { ...noImageData });
@@ -133,6 +139,9 @@ export const putPaper: RequestHandler = async (req, res, next) => {
 
     res.status(200).send({ paperId });
   } catch (e) {
+    if (file) {
+      await deleteS3Image(file.location);
+    }
     console.error(e);
     next(e);
   }
@@ -169,6 +178,7 @@ export const deletePaper: RequestHandler = async (req, res, next) => {
     const raters = await User.find({ _id: paper.rater }).select("rating");
     raters.map((rater) => (rater.rating.pull(paperId), rater.save()));
 
+    await deleteS3Image(paper.imageUrl);
     await Paper.findByIdAndDelete(paperId);
     await Comment.deleteMany({ paper: paperId });
     await Notification.deleteMany({ paper: paperId });
