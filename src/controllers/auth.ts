@@ -4,7 +4,7 @@ import User from "../db/schema/user";
 import { setToken } from "../middlewares/jwt";
 import { RequestHandler } from "express";
 
-const { ID_GOOGLE: client_id, PW_GOOGLE: client_secret } = process.env;
+const { ID_GOOGLE: client_id, PW_GOOGLE: client_secret, URI_GOOGLE: redirect_uri } = process.env;
 
 const googleCode = async (code: string) => {
   const token = await fetch("https://oauth2.googleapis.com/token", {
@@ -13,7 +13,7 @@ const googleCode = async (code: string) => {
       code,
       client_id,
       client_secret,
-      redirect_uri: "https://vegwins.vercel.app",
+      redirect_uri,
       // 팝업은 프론트에서 종료(redirect)되므로, 프론트 주소를 넣는다.
       grant_type: "authorization_code",
     }),
