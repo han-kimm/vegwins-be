@@ -121,11 +121,16 @@ export const getEditPaper: RequestHandler = async (req, res, next) => {
 export const putPaper: RequestHandler = async (req, res, next) => {
   const file = req.file as Express.MulterS3.File;
   try {
+    const { id } = res.locals.accessToken;
     const { paperId } = req.params;
     const paper = await Paper.findById(paperId).select("imageUrl");
+
+    if (paper?.writer._id.toString() !== id) {
+      return res.status(400).send({ code: 400, error: "자신의 문서만 편집할 수 있습니다." });
+    }
+
     const noImageData = JSON.parse(req.body.data);
     const deleteImage = JSON.parse(req.body.deleteImage);
-
     if (file) {
       await deleteS3Image(paper?.imageUrl);
       const { location } = file;
@@ -162,8 +167,9 @@ export const deletePaper: RequestHandler = async (req, res, next) => {
       return res.status(400).send({ code: 400, error: "자신의 문서만 삭제할 수 있습니다." });
     }
 
-    const writer = await findUserById(paper.writer._id.toString(), res);
+    const writer = await findUserById(id, res);
     writer.paper.pull(paperId);
+    writer.save();
 
     const commenters = await User.find({ _id: paper.commenter }).select("comment notification");
     const comments = (await Comment.find({ paper: paperId }).select("id")).map((v) => v._id);
