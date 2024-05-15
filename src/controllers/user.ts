@@ -40,10 +40,11 @@ export const getUserComment: RequestHandler = async (_, res, next) => {
     const { id } = res.locals.accessToken;
 
     const userComments = await Comment.find({ commenter: id })
-      .select("commenter content recomment createdAt")
+      .select("commenter content paper createdAt")
       .populate("paper", "title")
       .populate("commenter", "nickname");
 
+    console.log("=================", userComments);
     res.send(userComments);
   } catch (e) {
     console.error(e);

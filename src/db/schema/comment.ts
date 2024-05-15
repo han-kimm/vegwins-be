@@ -22,6 +22,7 @@ const commentSchema = new mongoose.Schema<IComment>(
     },
     paper: {
       type: Schema.Types.ObjectId,
+      ref: "Paper",
       required: [true, REQUIRED],
     },
     recomment: [
