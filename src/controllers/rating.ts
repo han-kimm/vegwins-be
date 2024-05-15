@@ -34,9 +34,11 @@ export const updateRating: RequestHandler = async (req, res, next) => {
     const userRating = user.rating;
     const userPreviousRating = userRating.id(paperId);
     if (userPreviousRating) {
-      userRating.pull(paperId);
+      const index = userRating.findIndex((v) => v._id.toString() === paperId);
+      userRating.splice(index, 1, { _id: paperId, rating } as any);
+    } else {
+      userRating.push({ _id: paperId, rating });
     }
-    userRating.push({ _id: paperId, rating });
     user.save();
 
     const paper = await findPaperById(paperId, res);
