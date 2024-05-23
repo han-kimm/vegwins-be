@@ -12,7 +12,7 @@ paperRouter.post("/", verifyToken, upload.array("image"), resizeImage, postPaper
 
 paperRouter.get("/:paperId", getOnePaper);
 paperRouter.get("/:paperId/edit", getEditPaper);
-paperRouter.put("/:paperId", verifyToken, upload.single("image"), resizeImage, putPaper);
+paperRouter.put("/:paperId", verifyToken, upload.array("image"), resizeImage, putPaper);
 paperRouter.delete("/:paperId", verifyToken, deletePaper);
 
 paperRouter.get("/:paperId/writer", verifyToken, canEdit);

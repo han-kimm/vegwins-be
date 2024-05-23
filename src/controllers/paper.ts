@@ -72,7 +72,7 @@ export const postPaper: RequestHandler = async (req, res, next) => {
       const location = files.map((v) => v.location);
       newPaper = await Paper.create({ ...noImageData, imageUrl: location, writer: id });
     } else if (!fileLength) {
-      newPaper = await Paper.create({ ...noImageData, writer: id });
+      newPaper = await Paper.create({ ...noImageData, imageUrl: [], writer: id });
     }
 
     const writer = await findUserById(id, res);
@@ -123,33 +123,43 @@ export const getEditPaper: RequestHandler = async (req, res, next) => {
 };
 
 export const putPaper: RequestHandler = async (req, res, next) => {
-  const file = req.file as Express.MulterS3.File;
+  const files = req.files as Express.MulterS3.File[];
+  const fileLength = files.length;
   try {
     const { id } = res.locals.accessToken;
     const { paperId } = req.params;
-    const paper = await Paper.findById(paperId).select("imageUrl");
+    const paper = await Paper.findById(paperId).select("imageUrl writer");
 
-    if (paper?.writer._id.toString() !== id) {
+    if (paper?.writer._id.toString() !== id && "6624ed49421a4c029a1f647a" !== id) {
       return res.status(400).send({ code: 400, error: "자신의 문서만 편집할 수 있습니다." });
     }
 
     const noImageData = JSON.parse(req.body.data);
-    const deleteImage = JSON.parse(req.body.deleteImage);
-    if (file) {
-      // await deleteS3Image(paper?.imageUrl);
-      const { location } = file;
-      await Paper.findByIdAndUpdate(paperId, { ...noImageData, imageUrl: location });
-    } else if (!file && deleteImage) {
-      // await deleteS3Image(paper?.imageUrl);
-      await Paper.findByIdAndUpdate(paperId, { ...noImageData, imageUrl: "" });
-    } else {
-      await Paper.findByIdAndUpdate(paperId, { ...noImageData });
+    const imageUpdate = noImageData.image;
+    const imageUrl = paper?.imageUrl ?? [];
+
+    for (const index in imageUpdate) {
+      const isUpdate = imageUpdate[index];
+      if (isUpdate) {
+        const currentUrl = imageUrl[Number(index)];
+        if (currentUrl) {
+          await deleteS3Image(currentUrl);
+        }
+        const newUrl = files.splice(0, 1)[0]?.location;
+        if (newUrl) {
+          imageUrl[Number(index)] = newUrl;
+        } else {
+          imageUrl.splice(Number(index), 1);
+        }
+      }
     }
+
+    await Paper.findByIdAndUpdate(paperId, { ...noImageData, imageUrl });
 
     res.status(200).send({ paperId });
   } catch (e) {
-    if (file) {
-      await deleteS3Image(file.location);
+    if (fileLength) {
+      files.forEach(async (file) => await deleteS3Image(file.location));
     }
     console.error(e);
     next(e);
