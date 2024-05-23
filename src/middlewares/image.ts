@@ -25,28 +25,30 @@ export const upload = multer({
 
 export const resizeImage: RequestHandler = async (req, res, next) => {
   try {
-    const file = req.file as Express.MulterS3.File;
-    if (!file) {
+    const files = req.files as Express.MulterS3.File[];
+    if (!files.length) {
       return next();
     }
 
-    const getObjectCommand = new GetObjectCommand({
-      Bucket: file.bucket,
-      Key: file.key,
-    });
+    for (const file of files) {
+      const getObjectCommand = new GetObjectCommand({
+        Bucket: file.bucket,
+        Key: file.key,
+      });
 
-    const object = await s3.send(getObjectCommand);
-    const sharpInput = await object.Body?.transformToByteArray();
+      const object = await s3.send(getObjectCommand);
+      const sharpInput = await object.Body?.transformToByteArray();
 
-    const Body = await sharp(sharpInput).resize({ width: 600 }).toFormat("webp").toBuffer();
+      const Body = await sharp(sharpInput).resize({ width: 600 }).toFormat("webp").toBuffer();
 
-    const putObjectCommand = new PutObjectCommand({
-      Bucket: file.bucket,
-      Key: file.key,
-      Body,
-    });
+      const putObjectCommand = new PutObjectCommand({
+        Bucket: file.bucket,
+        Key: file.key,
+        Body,
+      });
 
-    s3.send(putObjectCommand);
+      s3.send(putObjectCommand);
+    }
     next();
   } catch (e) {
     console.error(e);

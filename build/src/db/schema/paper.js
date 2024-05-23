@@ -40,7 +40,7 @@ const paperSchema = new mongoose_1.default.Schema({
         maxLength: [300, (0, errorMessage_1.MAXLENGTH)(300)],
         required: [true, errorMessage_1.REQUIRED],
     },
-    imageUrl: String,
+    imageUrl: [String],
     hashtag: [String],
     writer: {
         type: mongoose_1.Schema.Types.ObjectId,

@@ -8,7 +8,7 @@ import { verifyToken } from "../middlewares/jwt";
 const paperRouter = Router();
 
 paperRouter.get("/", getPaper);
-paperRouter.post("/", verifyToken, upload.single("image"), resizeImage, postPaper);
+paperRouter.post("/", verifyToken, upload.array("image"), resizeImage, postPaper);
 
 paperRouter.get("/:paperId", getOnePaper);
 paperRouter.get("/:paperId/edit", getEditPaper);

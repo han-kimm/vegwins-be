@@ -1,8 +1,5 @@
 import mongoose, { Schema, Types } from "mongoose";
 import { MAXLENGTH, REQUIRED } from "../../constants/errorMessage";
-import User from "./user";
-import Comment from "./comment";
-import Notification from "./notification";
 
 export interface IPaper {
   _id: Types.ObjectId;
@@ -12,7 +9,7 @@ export interface IPaper {
   writer: Types.ObjectId;
   commenter: Types.DocumentArray<Types.ObjectId>;
   rater: Types.DocumentArray<Types.ObjectId>;
-  imageUrl?: string;
+  imageUrl: string[];
   hashtag: string[];
   rating: {
     [0]?: number;
@@ -43,7 +40,7 @@ const paperSchema = new mongoose.Schema<IPaper>(
       maxLength: [300, MAXLENGTH(300)],
       required: [true, REQUIRED],
     },
-    imageUrl: String,
+    imageUrl: [String],
     hashtag: [String],
     writer: {
       type: Schema.Types.ObjectId,
