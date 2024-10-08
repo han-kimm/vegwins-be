@@ -116,8 +116,10 @@ const codeRouter = Router();
 
 codeRouter.get("/", async (_, res) => {
   const saveFilePath = path.join(__dirname, "../../code.json");
+  console.log("saveFilePath", saveFilePath);
   if (fs.existsSync(saveFilePath)) {
     const code = fs.readFileSync(saveFilePath, "utf-8");
+    console.log("previously fetched code");
     return res.send({ code });
   }
 
@@ -132,6 +134,7 @@ codeRouter.get("/", async (_, res) => {
     await fetcher.fetchTypeScriptFiles();
     const code = fetcher.saveTypeScriptFilesAsJson();
 
+    fs.writeFileSync(saveFilePath, code, "utf-8");
     return res.send({ code });
   } catch (error) {
     return res.status(500).send({ error: "An error occurred" });
