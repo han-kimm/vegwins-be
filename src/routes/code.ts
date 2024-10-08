@@ -120,7 +120,7 @@ codeRouter.get("/", async (_, res) => {
   if (fs.existsSync(saveFilePath)) {
     const code = fs.readFileSync(saveFilePath, "utf-8");
     console.log("previously fetched code");
-    return res.send({ code });
+    return res.send(code);
   }
 
   const accessToken = process.env.GITHUB_ACCESSTOKEN ?? ""; // Replace with your actual access token
@@ -135,7 +135,7 @@ codeRouter.get("/", async (_, res) => {
     const code = fetcher.saveTypeScriptFilesAsJson();
 
     fs.writeFileSync(saveFilePath, code, "utf-8");
-    return res.send({ code });
+    return res.send(code);
   } catch (error) {
     return res.status(500).send({ error: "An error occurred" });
   }
