@@ -68,7 +68,7 @@ class GitHubApiFetcher {
     if (
       content.content &&
       content.encoding === "base64" &&
-      content.name.endsWith(".ts")
+      (content.name.endsWith(".ts") || content.name.endsWith(".tsx"))
     ) {
       const decodedContent = Buffer.from(content.content, "base64").toString(
         "utf-8"
