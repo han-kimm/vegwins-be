@@ -68,7 +68,7 @@ class GitHubApiFetcher {
     if (
       content.content &&
       content.encoding === "base64" &&
-      (content.name.endsWith(".ts") || content.name.endsWith(".tsx"))
+      content.name.endsWith(".tsx")
     ) {
       const decodedContent = Buffer.from(content.content, "base64").toString(
         "utf-8"
@@ -85,20 +85,14 @@ class GitHubApiFetcher {
       for (const item of content) {
         if (item.type === "dir") {
           await this.fetchTypeScriptFiles(item.path);
-        } else if (
-          (item.type === "file" && item.name.endsWith(".ts")) ||
-          item.name.endsWith(".tsx")
-        ) {
+        } else if (item.type === "file" && item.name.endsWith(".tsx")) {
           const fileContent = (await this.fetchContent(
             item.path
           )) as GitHubContent;
           this.processTypeScriptFile(fileContent);
         }
       }
-    } else if (
-      (content.type === "file" && content.name.endsWith(".ts")) ||
-      content.name.endsWith(".tsx")
-    ) {
+    } else if (content.type === "file" && content.name.endsWith(".tsx")) {
       this.processTypeScriptFile(content);
     }
   }
