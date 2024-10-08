@@ -10,7 +10,7 @@ const indexRouter = Router();
 
 indexRouter.use(
   cors({
-    origin: ["http://localhost:3000", "https://vegwins.com"],
+    origin: ["http://localhost:3000", "https://vegwins.com", "*"],
     credentials: true,
   })
 );
