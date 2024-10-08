@@ -85,14 +85,20 @@ class GitHubApiFetcher {
       for (const item of content) {
         if (item.type === "dir") {
           await this.fetchTypeScriptFiles(item.path);
-        } else if (item.type === "file" && item.name.endsWith(".ts")) {
+        } else if (
+          (item.type === "file" && item.name.endsWith(".ts")) ||
+          item.name.endsWith(".tsx")
+        ) {
           const fileContent = (await this.fetchContent(
             item.path
           )) as GitHubContent;
           this.processTypeScriptFile(fileContent);
         }
       }
-    } else if (content.type === "file" && content.name.endsWith(".ts")) {
+    } else if (
+      (content.type === "file" && content.name.endsWith(".ts")) ||
+      content.name.endsWith(".tsx")
+    ) {
       this.processTypeScriptFile(content);
     }
   }
