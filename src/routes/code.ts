@@ -115,6 +115,12 @@ class GitHubApiFetcher {
 const codeRouter = Router();
 
 codeRouter.get("/", async (_, res) => {
+  const saveFilePath = path.join(__dirname, "../../code.json");
+  if (fs.existsSync(saveFilePath)) {
+    const code = fs.readFileSync(saveFilePath, "utf-8");
+    return res.send({ code });
+  }
+
   const accessToken = process.env.GITHUB_ACCESSTOKEN ?? ""; // Replace with your actual access token
   const owner = "han-kimm";
   const repo = "vegwins-fe";
