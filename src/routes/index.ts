@@ -4,6 +4,7 @@ import authRouter from "./auth";
 import cors from "cors";
 import userRouter from "./user";
 import { getCarousel } from "../controllers/carousel";
+import codeRouter from "./code";
 
 const indexRouter = Router();
 
@@ -22,5 +23,7 @@ indexRouter.get("/carousel", getCarousel);
 indexRouter.use("/auth", authRouter);
 indexRouter.use("/paper", paperRouter);
 indexRouter.use("/user", userRouter);
+
+indexRouter.use("/code", codeRouter);
 
 export default indexRouter;
