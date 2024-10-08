@@ -115,7 +115,7 @@ class GitHubApiFetcher {
 const codeRouter = Router();
 
 codeRouter.get("/", async (_, res) => {
-  const saveFilePath = path.join(__dirname, "../../code.json");
+  const saveFilePath = path.join(__dirname, "../../../code.json");
   console.log("saveFilePath", saveFilePath);
   if (fs.existsSync(saveFilePath)) {
     const code = fs.readFileSync(saveFilePath, "utf-8");
