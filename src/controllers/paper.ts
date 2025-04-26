@@ -22,11 +22,66 @@ export const getPaper: RequestHandler = async (req, res, next) => {
         .select("title end imageUrl hashtag rated rating.length")
         .sort({ rated: -1 });
     } else if (c && k) {
-      papers = await Paper.find({ ...makeKeywordQuery(k), category: c }).select("title end imageUrl hashtag rated rating.length");
+      papers = await Paper.aggregate([
+        {
+          $search: {
+            compound: {
+              must: [
+                {
+                  text: {
+                    query: k,
+                    path: ["title", "hashtag", "description"],
+                  },
+                },
+              ],
+            },
+          },
+        },
+        {
+          $match: {
+            category: c,
+          },
+        },
+        {
+          $project: {
+            title: 1,
+            end: 1,
+            imageUrl: 1,
+            hashtag: 1,
+            rated: 1,
+            ["rating.length"]: 1,
+          },
+        },
+        {
+          $sort: { score: { $meta: "textScore" } },
+        },
+      ]);
     } else if (c) {
       papers = await Paper.find({ category: c }).select("title end imageUrl hashtag rated rating.length");
     } else if (k) {
-      papers = await Paper.find({ ...makeKeywordQuery(k) }).select("title end imageUrl hashtag rated rating.length");
+      papers = await Paper.aggregate([
+        {
+          $search: {
+            text: {
+              query: k,
+              path: ["title", "hashtag", "description"],
+            },
+          },
+        },
+        {
+          $project: {
+            title: 1,
+            end: 1,
+            imageUrl: 1,
+            hashtag: 1,
+            rated: 1,
+            ["rating.length"]: 1,
+          },
+        },
+        {
+          $sort: { score: { $meta: "textScore" } },
+        },
+      ]);
     } else {
       papers = await Paper.find({}).select("title end imageUrl hashtag rated rating.length").sort({ createdAt: -1 });
     }
@@ -108,7 +163,7 @@ export const canEdit: RequestHandler = async (req, res, next) => {
 
 const makeKeywordQuery = (k: string) => {
   const REG = /#[a-z0-9_가-힣]+/;
-  return REG.test(k) ? { hashtag: k } : { $text: { $search: k } };
+  return REG.test(k) ? { hashtag: k } : { $search: { title: k } };
 };
 
 export const getEditPaper: RequestHandler = async (req, res, next) => {
