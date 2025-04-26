@@ -39,13 +39,3 @@ app.on("diconnected", () => {
     });
   }
 });
-
-// const options = {
-//   key: readFileSync("https/server.key"),
-//   cert: readFileSync("https/server.crt"),
-//   ca: readFileSync("https/server.csr"),
-// };
-
-// https.createServer(options, app).listen(8000, () => {
-//   console.log("https connected");
-// });
