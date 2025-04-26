@@ -4,11 +4,12 @@
   "description": "비긴즈 RESTful API 서버입니다.",
   "main": "/src/app.ts",
   "scripts": {
-    "compile": "tsc && node ./build/src/app.js",
-    "dev": "nodemon -e ts --exec \"npm run compile\""
+    "build": "tsc",
+    "dev": "nodemon --watch ./src --exec ts-node ./src/app.ts",
+    "start": "node ./build/src/app.js"
   },
   "keywords": [],
-  "author": "Han-Kimm",
+  "author": "han-kimm",
   "license": "ISC",
   "dependencies": {
     "@aws-sdk/client-s3": "^3.564.0",
